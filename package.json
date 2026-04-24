@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "npm ci && next build",
+    "build": "npm ci --include=dev && next build",
     "build:next": "next build",
     "start": "next start",
     "serve": "next start",
