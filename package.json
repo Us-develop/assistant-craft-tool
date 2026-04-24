@@ -1,0 +1,50 @@
+{
+  "name": "assistant-craft-tool",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-step wizard that generates a tailored AI assistant system prompt, with MySQL logging of all entries.",
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "^5.2.8",
+    "@hookform/resolvers": "^3.10.0",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^0.462.0",
+    "mysql2": "^3.11.5",
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.61.1",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.16.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^15.5.0",
+    "postcss": "^8.5.0",
+    "prettier": "^3.4.0",
+    "prettier-plugin-tailwindcss": "^0.6.0",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

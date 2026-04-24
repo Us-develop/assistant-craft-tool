@@ -1,0 +1,267 @@
+@import "tailwindcss";
+@import "@fontsource/dm-sans/400.css";
+@import "@fontsource/dm-sans/500.css";
+@import "@fontsource/dm-sans/600.css";
+@import "@fontsource/dm-sans/700.css";
+
+@theme {
+  /* Design tokens ported from the Lovable version. HSL values are kept so
+     consumers can write hsl(var(--x) / <alpha>) for opacity blends. */
+  --color-background: hsl(0 0% 98%);
+  --color-foreground: hsl(220 15% 20%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(220 15% 20%);
+  --color-primary: hsl(155 40% 49%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(155 30% 95%);
+  --color-secondary-foreground: hsl(155 40% 30%);
+  --color-muted: hsl(220 14% 96%);
+  --color-muted-foreground: hsl(220 10% 50%);
+  --color-accent: hsl(155 30% 95%);
+  --color-accent-foreground: hsl(155 40% 30%);
+  --color-destructive: hsl(0 70% 55%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(220 14% 90%);
+  --color-input: hsl(220 14% 90%);
+  --color-ring: hsl(155 40% 49%);
+
+  --color-mint: hsl(155 40% 49%);
+  --color-mint-light: hsl(155 30% 95%);
+  --color-mint-medium: hsl(155 35% 85%);
+  --color-amber: hsl(40 90% 55%);
+  --color-amber-light: hsl(45 80% 95%);
+  --color-lavender: hsl(260 50% 70%);
+  --color-lavender-light: hsl(260 40% 96%);
+  --color-warm-orange: hsl(30 90% 60%);
+  --color-warm-orange-light: hsl(40 80% 95%);
+  --color-success-light: hsl(145 50% 94%);
+  --color-error-light: hsl(0 60% 95%);
+
+  --radius: 1.25rem;
+  --shadow-card: 0 4px 24px -4px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 8px 32px -4px rgb(0 0 0 / 0.1);
+
+  --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@layer components {
+  .card-elevated {
+    background: var(--color-card);
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card-elevated:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+    font-weight: 500;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    transition:
+      opacity 0.2s,
+      transform 0.1s;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    transform: none;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    font-weight: 500;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    transition:
+      background 0.2s,
+      transform 0.1s;
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-accent);
+  }
+
+  .btn-ghost:active {
+    transform: scale(0.98);
+  }
+
+  .info-box {
+    padding: 1rem;
+    border-radius: 1rem;
+    border-left: 4px solid var(--color-mint);
+    background: var(--color-mint-light);
+  }
+
+  .tip-box {
+    padding: 1rem;
+    border-radius: 1rem;
+    border-left: 4px solid var(--color-amber);
+    background: var(--color-amber-light);
+  }
+
+  .pill-tag {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--color-mint-light);
+    color: var(--color-mint);
+    transition: background 0.2s;
+    user-select: none;
+  }
+
+  .pill-tag:hover:not(.active) {
+    background: var(--color-mint-medium);
+  }
+
+  .pill-tag.active {
+    background: var(--color-mint);
+    color: var(--color-primary-foreground);
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    color: var(--color-foreground);
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .input-field::placeholder {
+    color: var(--color-muted-foreground);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--color-mint);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-mint) 25%, transparent);
+  }
+
+  .input-field.error {
+    border-color: var(--color-destructive);
+  }
+
+  .do-box {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: var(--color-success-light);
+  }
+
+  .dont-box {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: var(--color-error-light);
+  }
+
+  .selection-card {
+    padding: 1.25rem;
+    border-radius: 20px;
+    background: var(--color-card);
+    box-shadow: var(--shadow-card);
+    border: 2px solid transparent;
+    transition:
+      box-shadow 0.2s,
+      border-color 0.2s,
+      background 0.2s;
+    cursor: pointer;
+  }
+
+  .selection-card:hover:not(.active) {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .selection-card.active {
+    border-color: var(--color-mint);
+    background: var(--color-mint-light);
+  }
+}
+
+/* Decorative background blobs on step 1 */
+.blob-1,
+.blob-2,
+.blob-3 {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(55px);
+}
+
+.blob-1 {
+  width: 300px;
+  height: 300px;
+  background: color-mix(in srgb, var(--color-mint) 6%, transparent);
+}
+
+.blob-2 {
+  width: 200px;
+  height: 200px;
+  background: color-mix(in srgb, var(--color-warm-orange) 5%, transparent);
+}
+
+.blob-3 {
+  width: 250px;
+  height: 250px;
+  background: color-mix(in srgb, var(--color-lavender) 5%, transparent);
+}

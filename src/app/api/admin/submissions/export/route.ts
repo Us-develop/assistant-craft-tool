@@ -1,0 +1,65 @@
+import { type NextRequest } from "next/server";
+import { desc } from "drizzle-orm";
+import { db, schema } from "@/lib/db";
+import { requireAdminAuth } from "@/lib/auth";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const CSV_HEADERS = [
+  "id",
+  "created_at",
+  "language",
+  "assistant_name",
+  "domain",
+  "job_title",
+  "char_count",
+  "generated_prompt",
+  "kickoff_message",
+] as const;
+
+export async function GET(request: NextRequest): Promise<Response> {
+  const authError = requireAdminAuth(request);
+  if (authError) return authError;
+
+  const rows = await db
+    .select()
+    .from(schema.submissions)
+    .orderBy(desc(schema.submissions.createdAt));
+
+  const chunks: string[] = [CSV_HEADERS.join(",")];
+  for (const row of rows) {
+    chunks.push(
+      [
+        row.id,
+        row.createdAt.toISOString(),
+        row.language,
+        row.assistantName ?? "",
+        row.domain ?? "",
+        row.jobTitle ?? "",
+        row.charCount,
+        row.generatedPrompt,
+        row.kickoffMessage ?? "",
+      ]
+        .map(escapeCsv)
+        .join(","),
+    );
+  }
+
+  const filename = `submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+  return new Response(chunks.join("\n"), {
+    status: 200,
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+    },
+  });
+}
+
+function escapeCsv(value: unknown): string {
+  const s = value == null ? "" : String(value);
+  if (s.includes(",") || s.includes('"') || s.includes("\n") || s.includes("\r")) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
