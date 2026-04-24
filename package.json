@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm ci && next build",
+    "build:next": "next build",
     "start": "next start",
     "serve": "next start",
     "lint": "eslint src",
