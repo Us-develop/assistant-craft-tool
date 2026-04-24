@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useWizard } from "./WizardContext";
-import { MessageSquare, X, Send, Sparkles, Loader2 } from "lucide-react";
+import { X, Send, Loader2 } from "lucide-react";
 
 interface ChatMessage {
   id: string;
@@ -45,6 +46,8 @@ const STEP_HINTS: Record<number, { en: string; nl: string }> = {
   },
 };
 
+const ROBOT = "/ai-assistant-robot.png";
+
 export default function AIAssistantPanel() {
   const { lang, step, data } = useWizard();
   const [isOpen, setIsOpen] = useState(false);
@@ -52,6 +55,10 @@ export default function AIAssistantPanel() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const [isJumping, setIsJumping] = useState(false);
+  const [wiggle, setWiggle] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setMessages([]);
@@ -60,6 +67,42 @@ export default function AIAssistantPanel() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Periodic jump when the floating bot is visible (draws attention)
+  useEffect(() => {
+    if (isOpen) return;
+    const first = window.setTimeout(() => {
+      setIsJumping(true);
+    }, 5500);
+    const interval = window.setInterval(() => {
+      setIsJumping(true);
+    }, 15_000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(interval);
+    };
+  }, [isOpen]);
+
+  const handleFabMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const el = fabRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const mx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+    const my = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+    setTilt({ x: my * 7, y: -mx * 7 });
+  };
+
+  const handleFabLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
+
+  const openWithMicroInteraction = () => {
+    setWiggle(true);
+    window.setTimeout(() => {
+      setIsOpen(true);
+      setWiggle(false);
+    }, 200);
+  };
 
   const hint = STEP_HINTS[step]?.[lang] || STEP_HINTS[step]?.en || "";
 
@@ -152,22 +195,62 @@ export default function AIAssistantPanel() {
 
   if (!isOpen) {
     return (
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary) text-(--color-primary-foreground) shadow-lg transition-transform hover:scale-105"
-        aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
+      <div
+        className="pointer-events-auto fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6"
+        onMouseLeave={handleFabLeave}
       >
-        <Sparkles className="h-6 w-6" />
-      </button>
+        <div
+          className={`relative ${isJumping ? "ai-robot-fab-jump" : ""}`}
+          onAnimationEnd={(e) => {
+            if (e.animationName === "ai-robot-jump") {
+              setIsJumping(false);
+            }
+          }}
+        >
+          <div className={`${!isJumping ? "ai-robot-fab-breathe" : ""} ${wiggle ? "ai-robot-fab-wiggle" : ""}`}>
+            <button
+              ref={fabRef}
+              type="button"
+              onClick={openWithMicroInteraction}
+              onMouseMove={handleFabMove}
+              className="group relative flex h-[5.5rem] w-[4.5rem] cursor-pointer items-end justify-center overflow-visible rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-0 shadow-lg transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
+              style={{ perspective: 520 }}
+              aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
+            >
+              <div
+                className="h-full w-full transition-transform duration-150 ease-out group-active:scale-95"
+                style={{
+                  transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                }}
+              >
+                <Image
+                  src={ROBOT}
+                  alt=""
+                  width={90}
+                  height={108}
+                  className="pointer-events-none h-[5.25rem] w-auto max-w-[4.5rem] object-contain object-bottom"
+                  unoptimized
+                />
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex w-[380px] max-w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl">
+    <div className="fixed bottom-4 right-4 z-50 flex w-[380px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl sm:bottom-6 sm:right-6 sm:max-w-[calc(100vw-3rem)]">
       <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-primary) px-4 py-3 text-(--color-primary-foreground)">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5" />
+          <Image
+            src={ROBOT}
+            alt=""
+            width={32}
+            height={38}
+            className="h-8 w-7 shrink-0 object-contain object-bottom"
+            unoptimized
+          />
           <span className="font-medium">
             {lang === "nl" ? "AI Assistent" : "AI Assistant"}
           </span>
@@ -185,8 +268,15 @@ export default function AIAssistantPanel() {
       <div className="flex h-80 flex-col gap-3 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <div className="rounded-full bg-(--color-titan-white) p-3">
-              <MessageSquare className="h-6 w-6 text-(--color-lavender)" />
+            <div className="flex h-20 w-20 items-end justify-center rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-1 shadow-sm">
+              <Image
+                src={ROBOT}
+                alt=""
+                width={80}
+                height={96}
+                className="h-16 w-auto object-contain object-bottom"
+                unoptimized
+              />
             </div>
             <div>
               <p className="text-sm font-medium text-(--color-foreground)">
