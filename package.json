@@ -20,7 +20,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@fontsource/dm-sans": "^5.2.8",
+    "@fontsource/bricolage-grotesque": "^5.2.10",
+    "@fontsource/public-sans": "^5.2.7",
     "@hookform/resolvers": "^3.10.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

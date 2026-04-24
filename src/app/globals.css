@@ -1,47 +1,105 @@
 @import "tailwindcss";
-@import "@fontsource/dm-sans/400.css";
-@import "@fontsource/dm-sans/500.css";
-@import "@fontsource/dm-sans/600.css";
-@import "@fontsource/dm-sans/700.css";
 
+/* Us Design System — fonts */
+@import "@fontsource/bricolage-grotesque/300.css";
+@import "@fontsource/bricolage-grotesque/400.css";
+@import "@fontsource/bricolage-grotesque/500.css";
+@import "@fontsource/bricolage-grotesque/600.css";
+@import "@fontsource/bricolage-grotesque/700.css";
+@import "@fontsource/public-sans/300.css";
+@import "@fontsource/public-sans/400.css";
+@import "@fontsource/public-sans/500.css";
+@import "@fontsource/public-sans/600.css";
+@import "@fontsource/public-sans/700.css";
+
+/*
+  Us Design System — Light mode
+  Tokens ported from design-system/ JSON exports. Semantic role-based tokens
+  (primary / foreground / muted / etc.) are aliased to primitives so components
+  can keep using generic role names.
+*/
 @theme {
-  /* Design tokens ported from the Lovable version. HSL values are kept so
-     consumers can write hsl(var(--x) / <alpha>) for opacity blends. */
-  --color-background: hsl(0 0% 98%);
-  --color-foreground: hsl(220 15% 20%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(220 15% 20%);
-  --color-primary: hsl(155 40% 49%);
-  --color-primary-foreground: hsl(0 0% 100%);
-  --color-secondary: hsl(155 30% 95%);
-  --color-secondary-foreground: hsl(155 40% 30%);
-  --color-muted: hsl(220 14% 96%);
-  --color-muted-foreground: hsl(220 10% 50%);
-  --color-accent: hsl(155 30% 95%);
-  --color-accent-foreground: hsl(155 40% 30%);
-  --color-destructive: hsl(0 70% 55%);
-  --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(220 14% 90%);
-  --color-input: hsl(220 14% 90%);
-  --color-ring: hsl(155 40% 49%);
+  /* — Primitives — */
+  --color-shark: #191a1b;
+  --color-lavender: #bdb4ff;
+  --color-perfume: #f3aaff;
+  --color-mint-green: #8dffb7;
+  --color-rajah: #ffb985;
 
-  --color-mint: hsl(155 40% 49%);
-  --color-mint-light: hsl(155 30% 95%);
-  --color-mint-medium: hsl(155 35% 85%);
-  --color-amber: hsl(40 90% 55%);
-  --color-amber-light: hsl(45 80% 95%);
-  --color-lavender: hsl(260 50% 70%);
-  --color-lavender-light: hsl(260 40% 96%);
-  --color-warm-orange: hsl(30 90% 60%);
-  --color-warm-orange-light: hsl(40 80% 95%);
-  --color-success-light: hsl(145 50% 94%);
-  --color-error-light: hsl(0 60% 95%);
+  --color-titan-white: #f2f0ff;
+  --color-selago: #fbe3ff;
+  --color-hint-green: #e6ffef;
+  --color-seashell: #fff3eb;
 
-  --radius: 1.25rem;
-  --shadow-card: 0 4px 24px -4px rgb(0 0 0 / 0.06);
-  --shadow-card-hover: 0 8px 32px -4px rgb(0 0 0 / 0.1);
+  --color-neutral-00: #ffffff;
+  --color-neutral-10: #fcfcfc;
+  --color-neutral-20: #f9f9f9;
+  --color-neutral-30: #f3f3f3;
+  --color-neutral-40: #eaeaea;
+  --color-neutral-50: #d9d9d9;
+  --color-neutral-60: #a7a7a7;
+  --color-neutral-70: #707070;
+  --color-neutral-80: #494949;
+  --color-neutral-90: #2e2e2e;
+  --color-neutral-100: #000000;
 
-  --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
+  --color-system-error: #df2020;
+  --color-system-info: #3c81e7;
+  --color-system-success: #41bd73;
+  --color-system-warning: #eb8916;
+
+  /* — Semantic roles (Light mode) — */
+  --color-background: var(--color-neutral-00);
+  --color-foreground: var(--color-shark);
+  --color-card: var(--color-neutral-00);
+  --color-card-foreground: var(--color-shark);
+  --color-primary: var(--color-shark);
+  --color-primary-foreground: var(--color-neutral-00);
+  --color-secondary: var(--color-titan-white);
+  --color-secondary-foreground: var(--color-shark);
+  --color-muted: var(--color-neutral-30);
+  --color-muted-foreground: var(--color-neutral-70);
+  --color-accent: var(--color-hint-green);
+  --color-accent-foreground: var(--color-shark);
+  --color-destructive: var(--color-system-error);
+  --color-destructive-foreground: var(--color-neutral-00);
+  --color-border: var(--color-neutral-40);
+  --color-input: var(--color-neutral-40);
+  --color-ring: var(--color-shark);
+
+  /* — Legacy aliases (keep existing components working) — */
+  --color-mint: var(--color-system-success);
+  --color-mint-light: var(--color-hint-green);
+  --color-mint-medium: #b7f2cc;
+  --color-amber: var(--color-system-warning);
+  --color-amber-light: var(--color-seashell);
+  --color-lavender-light: var(--color-titan-white);
+  --color-warm-orange: var(--color-rajah);
+  --color-warm-orange-light: var(--color-seashell);
+  --color-success-light: var(--color-hint-green);
+  --color-error-light: #ffe5e5;
+
+  /* — Radius — */
+  --radius-xs: 2px;
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 24px;
+  --radius-xl: 32px;
+  --radius-image: 12px;
+  --radius-card: 24px;
+  --radius-pill: 500px;
+  --radius: var(--radius-card);
+
+  /* — Elevation — */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px -4px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 2px 4px rgb(0 0 0 / 0.05), 0 12px 32px -8px rgb(0 0 0 / 0.08);
+
+  /* — Fonts — */
+  --font-sans: "Public Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "Bricolage Grotesque", "Public Sans", system-ui, sans-serif;
+
+  /* — Layout — */
+  --wizard-width: min(80vw, 1180px);
 }
 
 @layer base {
@@ -57,7 +115,9 @@
     background: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-weight: 300;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -66,127 +126,236 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-sans);
-    font-weight: 600;
+    font-family: var(--font-display);
+    color: var(--color-foreground);
     letter-spacing: -0.01em;
+  }
+
+  h1 {
+    font-weight: 700;
+  }
+  h2,
+  h3 {
+    font-weight: 700;
+  }
+  h4,
+  h5 {
+    font-weight: 500;
+  }
+  h6 {
+    font-weight: 300;
+  }
+
+  strong,
+  b {
+    font-weight: 600;
   }
 
   button {
     cursor: pointer;
+    font-family: var(--font-display);
   }
 
   button:disabled {
     cursor: not-allowed;
   }
+
+  input,
+  textarea,
+  select {
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: var(--color-shark);
+    color: var(--color-neutral-00);
+  }
 }
 
 @layer components {
+  /* Shared wizard/page shell: 80% of the viewport, capped at the design
+     system's content-width. Use instead of `mx-auto max-w-3xl`. */
+  .wizard-shell {
+    width: var(--wizard-width);
+    margin-inline: auto;
+  }
+
+  /* ——— Surfaces ——— */
+
   .card-elevated {
     background: var(--color-card);
-    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
-    transition: box-shadow 0.2s ease;
+    transition:
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
   }
 
   .card-elevated:hover {
     box-shadow: var(--shadow-card-hover);
   }
 
+  /* ——— Buttons ———
+     Primary (Us): Shark bg + white label. Hover = Neutrals/80.
+     Ghost/Secondary: White bg + Shark outline + Shark label.
+                      Hover = filled Shark + white label. */
+
   .btn-primary {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     background: var(--color-primary);
     color: var(--color-primary-foreground);
+    font-family: var(--font-display);
     font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5rem;
     padding: 0.75rem 2rem;
-    border-radius: 9999px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-pill);
     transition:
-      opacity 0.2s,
-      transform 0.1s;
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.1s ease;
   }
 
-  .btn-primary:hover {
-    opacity: 0.9;
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-neutral-80);
+    border-color: var(--color-neutral-80);
   }
 
-  .btn-primary:active {
+  .btn-primary:active:not(:disabled) {
     transform: scale(0.98);
   }
 
   .btn-primary:disabled {
-    opacity: 0.5;
-    transform: none;
+    background: var(--color-neutral-40);
+    border-color: var(--color-neutral-40);
+    color: var(--color-neutral-70);
   }
 
   .btn-ghost {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     background: transparent;
+    color: var(--color-foreground);
+    font-family: var(--font-display);
     font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5rem;
     padding: 0.75rem 2rem;
-    border-radius: 9999px;
-    border: 1px solid var(--color-primary);
-    color: var(--color-primary);
+    border: 1px solid var(--color-foreground);
+    border-radius: var(--radius-pill);
     transition:
-      background 0.2s,
-      transform 0.1s;
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.1s ease;
   }
 
-  .btn-ghost:hover {
-    background: var(--color-accent);
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-neutral-80);
+    color: var(--color-neutral-00);
+    border-color: var(--color-neutral-80);
   }
 
-  .btn-ghost:active {
+  .btn-ghost:active:not(:disabled) {
     transform: scale(0.98);
   }
 
+  .btn-ghost:disabled {
+    color: var(--color-neutral-60);
+    border-color: var(--color-neutral-60);
+  }
+
+  /* ——— Info / Tip / Do / Don't boxes ———
+     Left accent bar using pastel primaries, gentle tinted backgrounds. */
+
   .info-box {
-    padding: 1rem;
-    border-radius: 1rem;
-    border-left: 4px solid var(--color-mint);
-    background: var(--color-mint-light);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-m);
+    border-left: 4px solid var(--color-lavender);
+    background: var(--color-titan-white);
+    color: var(--color-foreground);
   }
 
   .tip-box {
-    padding: 1rem;
-    border-radius: 1rem;
-    border-left: 4px solid var(--color-amber);
-    background: var(--color-amber-light);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-m);
+    border-left: 4px solid var(--color-rajah);
+    background: var(--color-seashell);
+    color: var(--color-foreground);
   }
 
+  .do-box {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-m);
+    border-left: 4px solid var(--color-mint-green);
+    background: var(--color-hint-green);
+  }
+
+  .dont-box {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-m);
+    border-left: 4px solid var(--color-system-error);
+    background: var(--color-error-light);
+  }
+
+  /* ——— Pill selector tags ———
+     Monochrome, Us-style: white bg + dark stroke default; flips to
+     Shark-filled + white text when active. */
+
   .pill-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 0.5rem 1rem;
-    border-radius: 9999px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-foreground);
+    background: var(--color-card);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
     font-size: 0.875rem;
     font-weight: 500;
+    line-height: 1.25rem;
     cursor: pointer;
-    background: var(--color-mint-light);
-    color: var(--color-mint);
-    transition: background 0.2s;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
     user-select: none;
   }
 
   .pill-tag:hover:not(.active) {
-    background: var(--color-mint-medium);
+    background: var(--color-neutral-30);
   }
 
   .pill-tag.active {
-    background: var(--color-mint);
+    background: var(--color-foreground);
     color: var(--color-primary-foreground);
+    border-color: var(--color-foreground);
   }
+
+  /* ——— Inputs ——— */
 
   .input-field {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border-radius: 1rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-m);
     border: 1px solid var(--color-border);
     background: var(--color-card);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 1.5rem;
     transition:
-      border-color 0.2s,
-      box-shadow 0.2s;
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .input-field::placeholder {
@@ -195,73 +364,67 @@
 
   .input-field:focus {
     outline: none;
-    border-color: var(--color-mint);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-mint) 25%, transparent);
+    border-color: var(--color-foreground);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-foreground) 15%, transparent);
   }
 
   .input-field.error {
     border-color: var(--color-destructive);
   }
 
-  .do-box {
-    padding: 1rem;
-    border-radius: 1rem;
-    background: var(--color-success-light);
-  }
-
-  .dont-box {
-    padding: 1rem;
-    border-radius: 1rem;
-    background: var(--color-error-light);
-  }
+  /* ——— Selection cards (Step 1 domain tiles, etc.) ——— */
 
   .selection-card {
-    padding: 1.25rem;
-    border-radius: 20px;
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-card);
     background: var(--color-card);
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-card);
-    border: 2px solid transparent;
     transition:
-      box-shadow 0.2s,
-      border-color 0.2s,
-      background 0.2s;
+      box-shadow 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease,
+      transform 0.15s ease;
     cursor: pointer;
   }
 
   .selection-card:hover:not(.active) {
     box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-foreground);
+    transform: translateY(-2px);
   }
 
   .selection-card.active {
-    border-color: var(--color-mint);
-    background: var(--color-mint-light);
+    border-color: var(--color-foreground);
+    background: var(--color-hint-green);
   }
 }
 
-/* Decorative background blobs on step 1 */
+/* Decorative background blobs (Step 1) — Us brand primaries */
 .blob-1,
 .blob-2,
 .blob-3 {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(55px);
+  filter: blur(75px);
+  opacity: 0.5;
 }
 
 .blob-1 {
-  width: 300px;
-  height: 300px;
-  background: color-mix(in srgb, var(--color-mint) 6%, transparent);
+  width: 340px;
+  height: 340px;
+  background: var(--color-lavender);
 }
 
 .blob-2 {
-  width: 200px;
-  height: 200px;
-  background: color-mix(in srgb, var(--color-warm-orange) 5%, transparent);
+  width: 240px;
+  height: 240px;
+  background: var(--color-rajah);
 }
 
 .blob-3 {
-  width: 250px;
-  height: 250px;
-  background: color-mix(in srgb, var(--color-lavender) 5%, transparent);
+  width: 280px;
+  height: 280px;
+  background: var(--color-mint-green);
 }

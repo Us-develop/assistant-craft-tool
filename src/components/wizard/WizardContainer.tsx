@@ -66,7 +66,7 @@ export default function WizardContainer() {
         <>
           <ProgressBar />
 
-          <div className="relative mx-auto max-w-3xl px-4 pb-8">
+          <div className="wizard-shell relative px-4 pb-8">
             {step === 1 && (
               <>
                 <div className="blob-1 -top-20 -left-32" />

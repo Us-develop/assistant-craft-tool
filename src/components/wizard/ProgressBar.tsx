@@ -10,7 +10,7 @@ export default function ProgressBar() {
   const steps = Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
+    <div className="wizard-shell px-4 py-6">
       <div className="flex items-center justify-between gap-1">
         {steps.map((s, i) => (
           <div key={s} className="flex flex-1 items-center">
@@ -20,7 +20,7 @@ export default function ProgressBar() {
                   s < step
                     ? "bg-(--color-primary) text-(--color-primary-foreground)"
                     : s === step
-                      ? "bg-(--color-primary) text-(--color-primary-foreground) ring-4 ring-(--color-mint-light)"
+                      ? "bg-(--color-primary) text-(--color-primary-foreground) ring-4 ring-(--color-accent)"
                       : "bg-(--color-muted) text-(--color-muted-foreground)"
                 }`}
               >

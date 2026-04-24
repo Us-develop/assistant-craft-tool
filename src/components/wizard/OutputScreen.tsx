@@ -87,7 +87,7 @@ export default function OutputScreen() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+    <div className="wizard-shell space-y-6 px-4 py-8">
       <h2 className="text-center text-2xl font-semibold">{tr("output.title", lang)}</h2>
 
       <div className="card-elevated space-y-4 p-6">

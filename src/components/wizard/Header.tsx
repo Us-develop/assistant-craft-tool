@@ -7,10 +7,15 @@ export default function Header() {
   const { lang, setLang } = useWizard();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-card)/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+    <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-card)/85 backdrop-blur-md">
+      <div className="wizard-shell flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <span className="text-xl font-bold text-(--color-primary)">Us</span>
+          <span
+            className="text-2xl leading-none text-(--color-primary)"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "-0.02em" }}
+          >
+            Us
+          </span>
           <span className="hidden text-xs text-(--color-muted-foreground) sm:inline">
             {tr("header.tagline", lang)}
           </span>
