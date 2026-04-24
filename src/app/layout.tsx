@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Craft a tailored AI assistant system prompt in 8 guided steps. Bilingual (NL/EN).",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/logo-us.svg",
   },
 };
 

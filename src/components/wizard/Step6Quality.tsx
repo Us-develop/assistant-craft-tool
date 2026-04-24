@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
-import PillSelector from "./PillSelector";
+import SmartPillSelector from "./SmartPillSelector";
 
 export default function Step6Quality() {
   const { lang, data, updateData } = useWizard();
@@ -38,7 +38,8 @@ export default function Step6Quality() {
         <label className="mb-2 block text-sm font-medium">
           {tr("step6.checklist", lang)} ({data.checklist.length}/5)
         </label>
-        <PillSelector
+        <SmartPillSelector
+          category="quality checklist criteria"
           options={checklistPills.filter((p) => !data.checklist.includes(p))}
           selected={[]}
           onToggle={(val) => addCriterion(val)}

@@ -36,7 +36,7 @@ export default function ProgressBar() {
             </div>
             {i < TOTAL_STEPS - 1 && (
               <div
-                className={`mx-1 h-0.5 flex-1 rounded-full transition-colors ${
+                className={`relative bottom-[0.6rem] mx-1 h-0.5 flex-1 rounded-full transition-colors ${
                   s < step ? "bg-(--color-primary)" : "bg-(--color-muted)"
                 }`}
               />

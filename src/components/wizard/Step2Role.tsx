@@ -2,7 +2,7 @@
 
 import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
-import PillSelector from "./PillSelector";
+import SmartPillSelector from "./SmartPillSelector";
 
 export default function Step2Role() {
   const { lang, data, updateData } = useWizard();
@@ -37,7 +37,8 @@ export default function Step2Role() {
 
       <div>
         <label className="mb-2 block text-sm font-medium">{tr("step2.mentalLens", lang)}</label>
-        <PillSelector
+        <SmartPillSelector
+          category="mental lenses"
           options={mentalLensPills}
           selected={data.mentalLens}
           onToggle={(val) => {

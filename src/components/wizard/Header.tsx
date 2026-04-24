@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
 
@@ -10,12 +11,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-card)/85 backdrop-blur-md">
       <div className="wizard-shell flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <span
-            className="text-2xl leading-none text-(--color-primary)"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "-0.02em" }}
-          >
-            Us
-          </span>
+          <Image
+            src="/logo-us.svg"
+            alt="Us"
+            width={83}
+            height={40}
+            className="h-8 w-auto shrink-0"
+            priority
+          />
           <span className="hidden text-xs text-(--color-muted-foreground) sm:inline">
             {tr("header.tagline", lang)}
           </span>

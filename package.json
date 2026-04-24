@@ -20,9 +20,12 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.53",
+    "@ai-sdk/react": "^3.0.170",
     "@fontsource/bricolage-grotesque": "^5.2.10",
     "@fontsource/public-sans": "^5.2.7",
     "@hookform/resolvers": "^3.10.0",
+    "ai": "^6.0.168",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.2",

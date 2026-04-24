@@ -2,7 +2,7 @@
 
 import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
-import PillSelector from "./PillSelector";
+import SmartPillSelector from "./SmartPillSelector";
 
 export default function Step4Tone() {
   const { lang, data, updateData } = useWizard();
@@ -22,7 +22,8 @@ export default function Step4Tone() {
 
       <div>
         <label className="mb-2 block text-sm font-medium">{tr("step4.toneProfile", lang)}</label>
-        <PillSelector
+        <SmartPillSelector
+          category="tone profiles"
           options={tonePills}
           selected={data.toneProfile}
           onToggle={(val) => {

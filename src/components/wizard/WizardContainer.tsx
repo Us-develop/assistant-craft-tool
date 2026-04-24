@@ -14,6 +14,7 @@ import Step5Context from "./Step5Context";
 import Step6Quality from "./Step6Quality";
 import Step7Rules from "./Step7Rules";
 import Step8Output from "./Step8Output";
+import AIAssistantPanel from "./AIAssistantPanel";
 
 const TOTAL_STEPS = 8;
 
@@ -94,6 +95,8 @@ export default function WizardContainer() {
               </button>
             </div>
           </div>
+
+          <AIAssistantPanel />
         </>
       )}
     </div>
