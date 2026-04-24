@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
 import { generateSystemInstruction } from "@/lib/generatePrompt";
+import { buildMailtoOpenInstruction, downloadPromptPdf } from "@/lib/promptExport";
 import { isSubmittable, type Lang, type WizardData } from "@/lib/wizardSchema";
 import { useToast } from "@/components/ui/Toast";
 
@@ -29,8 +30,7 @@ export default function OutputScreen() {
   const { lang, data, setStep, setShowOutput, resetData } = useWizard();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"instruction" | "kickoff">("instruction");
-  const [copiedInstruction, setCopiedInstruction] = useState(false);
-  const [copiedKickoff, setCopiedKickoff] = useState(false);
+  const [linkBusy, setLinkBusy] = useState(false);
 
   const instruction = generateSystemInstruction(data, lang);
   const charCount = instruction.length;
@@ -76,14 +76,80 @@ export default function OutputScreen() {
       });
   }, [data, lang, instruction, toast]);
 
-  const copyText = async (text: string, setter: (v: boolean) => void) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setter(true);
-      window.setTimeout(() => setter(false), 2000);
-    } catch {
-      toast(tr("save.failed", lang), "error");
+  const filePrefix = data.assistantName?.trim() || "assistant";
+  const hasKickoff = Boolean(data.kickoffMessage?.trim());
+  const activeText = activeTab === "instruction" ? instruction : (data.kickoffMessage ?? "");
+  const canUseActive = activeTab === "instruction" || hasKickoff;
+
+  const copyActive = async () => {
+    if (!canUseActive) {
+      toast(tr("output.nothingToExport", lang), "error");
+      return;
     }
+    try {
+      await navigator.clipboard.writeText(activeText);
+      toast(tr("output.copyOk", lang), "success");
+    } catch {
+      toast(tr("output.copyFail", lang), "error");
+    }
+  };
+
+  const createShareLink = async () => {
+    setLinkBusy(true);
+    try {
+      const res = await fetch("/api/prompt-shares", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language: lang,
+          generatedPrompt: instruction,
+          kickoffMessage: data.kickoffMessage ?? "",
+          assistantName: data.assistantName ?? "",
+        }),
+      });
+      if (!res.ok) throw new Error("share failed");
+      const { url } = (await res.json()) as { url: string };
+      await navigator.clipboard.writeText(url);
+      toast(tr("output.linkCopied", lang), "success");
+    } catch (err) {
+      console.error(err);
+      toast(tr("output.linkFailed", lang), "error");
+    } finally {
+      setLinkBusy(false);
+    }
+  };
+
+  const downloadPdf = () => {
+    if (!canUseActive) {
+      toast(tr("output.nothingToExport", lang), "error");
+      return;
+    }
+    downloadPromptPdf(activeText, {
+      filePrefix,
+      lang: lang === "en" ? "en" : "nl",
+      variant: activeTab,
+    });
+  };
+
+  const sendEmail = async () => {
+    if (!canUseActive) {
+      toast(tr("output.nothingToExport", lang), "error");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(activeText);
+    } catch {
+      toast(tr("output.copyFail", lang), "error");
+      return;
+    }
+    const l = lang === "en" ? "en" : "nl";
+    const { subject, body } = buildMailtoOpenInstruction(
+      l,
+      data.assistantName ?? "",
+      activeTab,
+    );
+    const href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = href;
   };
 
   return (
@@ -158,39 +224,58 @@ export default function OutputScreen() {
 
         <div className="p-6">
           {activeTab === "instruction" ? (
-            <div>
-              <pre className="max-h-[500px] overflow-y-auto font-mono text-sm leading-relaxed whitespace-pre-wrap">
-                {instruction}
-              </pre>
-              <button
-                type="button"
-                onClick={() => copyText(instruction, setCopiedInstruction)}
-                className="btn-primary mt-4 text-sm"
-              >
-                <span className="material-icons-outlined text-sm">
-                  {copiedInstruction ? "check_circle" : "content_copy"}
-                </span>
-                {copiedInstruction ? tr("nav.copied", lang) : tr("nav.copy", lang)}
-              </button>
-            </div>
+            <pre className="max-h-[500px] overflow-y-auto font-mono text-sm leading-relaxed whitespace-pre-wrap">
+              {instruction}
+            </pre>
           ) : (
-            <div>
-              <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap">
-                {data.kickoffMessage || "—"}
-              </pre>
+            <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap">
+              {data.kickoffMessage || "—"}
+            </pre>
+          )}
+
+          <div className="mt-6 space-y-2 border-t border-(--color-border) pt-4">
+            <p className="text-xs font-medium text-(--color-muted-foreground)">
+              {tr("output.saveShare", lang)}
+            </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <button
                 type="button"
-                onClick={() => copyText(data.kickoffMessage, setCopiedKickoff)}
-                disabled={!data.kickoffMessage}
-                className="btn-primary mt-4 text-sm"
+                onClick={() => void copyActive()}
+                disabled={!canUseActive}
+                className="btn-primary text-sm"
               >
-                <span className="material-icons-outlined text-sm">
-                  {copiedKickoff ? "check_circle" : "content_copy"}
-                </span>
-                {copiedKickoff ? tr("nav.copied", lang) : tr("nav.copy", lang)}
+                <span className="material-icons-outlined text-sm">content_copy</span>
+                {tr("output.actionCopy", lang)}
+              </button>
+              <button
+                type="button"
+                onClick={() => void createShareLink()}
+                disabled={linkBusy}
+                className="btn-primary text-sm"
+              >
+                <span className="material-icons-outlined text-sm">link</span>
+                {linkBusy ? tr("nav.saving", lang) : tr("output.createLink", lang)}
+              </button>
+              <button
+                type="button"
+                onClick={downloadPdf}
+                disabled={!canUseActive}
+                className="btn-primary text-sm"
+              >
+                <span className="material-icons-outlined text-sm">picture_as_pdf</span>
+                {tr("output.downloadPdf", lang)}
+              </button>
+              <button
+                type="button"
+                onClick={() => void sendEmail()}
+                disabled={!canUseActive}
+                className="btn-primary text-sm"
+              >
+                <span className="material-icons-outlined text-sm">email</span>
+                {tr("output.sendEmail", lang)}
               </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
 

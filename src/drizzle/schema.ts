@@ -47,3 +47,18 @@ export const submissions = mysqlTable(
 
 export type Submission = typeof submissions.$inferSelect;
 export type NewSubmission = typeof submissions.$inferInsert;
+
+/**
+ * `prompt_shares` — public read-only share links for the generated system prompt
+ * (created from the result screen). Short token in the URL, no auth.
+ */
+export const promptShares = mysqlTable("prompt_shares", {
+  token: varchar("token", { length: 32 }).primaryKey(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  language: varchar("language", { length: 8 }).notNull(),
+  assistantName: varchar("assistant_name", { length: 160 }),
+  generatedPrompt: text("generated_prompt").notNull(),
+  kickoffMessage: text("kickoff_message"),
+});
+
+export type PromptShareRow = typeof promptShares.$inferSelect;
