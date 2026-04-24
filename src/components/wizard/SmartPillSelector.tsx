@@ -43,8 +43,11 @@ export default function SmartPillSelector({
       }
 
       const result = await response.json();
-      const newSuggestions = (result.suggestions as string[]).filter(
-        (s) => !options.includes(s) && !selected.includes(s) && !suggestions.includes(s),
+      const raw = Array.isArray(result.suggestions) ? (result.suggestions as string[]) : [];
+      // Only exclude fixed options and already-selected items — not the previous
+      // ghost list, so a second "Suggest more" replaces with a fresh batch.
+      const newSuggestions = raw.filter(
+        (s) => typeof s === "string" && !options.includes(s) && !selected.includes(s),
       );
       setSuggestions(newSuggestions);
     } catch (err) {
@@ -81,9 +84,9 @@ export default function SmartPillSelector({
 
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {suggestions.map((suggestion) => (
+          {suggestions.map((suggestion, index) => (
             <div
-              key={suggestion}
+              key={`${suggestion}-${index}`}
               className="group relative inline-flex items-center gap-1 rounded-full border border-dashed border-(--color-lavender) bg-(--color-titan-white) px-3 py-1.5 text-sm text-(--color-foreground)"
             >
               <button

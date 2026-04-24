@@ -1,6 +1,7 @@
 import { generateText } from "ai";
 import { z } from "zod";
 import { MODELS } from "@/lib/ai/client";
+import { parseSuggestionsFromLlm } from "@/lib/ai/parseSuggestionsResponse";
 import { buildSuggestPrompt } from "@/lib/ai/prompts";
 import { wizardSchema, LANGUAGES } from "@/lib/wizardSchema";
 
@@ -35,20 +36,7 @@ export async function POST(request: Request) {
       temperature: 0.7,
     });
 
-    let suggestions: string[];
-    try {
-      suggestions = JSON.parse(text.trim());
-      if (!Array.isArray(suggestions)) {
-        throw new Error("Response is not an array");
-      }
-      suggestions = suggestions.filter((s) => typeof s === "string" && s.trim().length > 0);
-    } catch {
-      const lines = text
-        .split("\n")
-        .map((line) => line.replace(/^[-*•]\s*/, "").replace(/^["']|["']$/g, "").trim())
-        .filter((line) => line.length > 0 && line.length < 100);
-      suggestions = lines.slice(0, 6);
-    }
+    const suggestions = parseSuggestionsFromLlm(text, 8);
 
     return Response.json({ suggestions });
   } catch (error) {

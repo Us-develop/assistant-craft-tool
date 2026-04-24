@@ -102,7 +102,7 @@ Generate 4-6 additional relevant ${category} suggestions that:
 3. Are concise (2-5 words each)
 4. Are in ${langName}
 
-Return ONLY a JSON array of strings. Example: ["suggestion 1", "suggestion 2", "suggestion 3"]`;
+Return ONLY a raw JSON array of strings on a single line or multiple lines — no markdown, no code fences, no \`\`\` backticks, no explanation. Example: ["suggestion 1", "suggestion 2", "suggestion 3"]`;
 }
 
 export function buildRefinePrompt(
