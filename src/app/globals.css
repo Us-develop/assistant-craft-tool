@@ -461,10 +461,26 @@
     }
   }
 
+  /* Horizontal nudge with Lottie “pace” mood */
+  .ai-robot-lottie-pace {
+    animation: ai-robot-pace 2.1s ease-in-out infinite;
+  }
+
+  @keyframes ai-robot-pace {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .ai-robot-fab-breathe,
     .ai-robot-fab-jump,
-    .ai-robot-fab-wiggle {
+    .ai-robot-fab-wiggle,
+    .ai-robot-lottie-pace {
       animation: none !important;
     }
   }

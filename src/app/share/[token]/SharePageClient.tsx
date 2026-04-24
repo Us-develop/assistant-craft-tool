@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { PromptShareRow } from "@/drizzle/schema";
 import { tr } from "@/lib/translations";
@@ -75,9 +76,9 @@ export default function SharePageClient({ row }: { row: PromptShareRow }) {
       ) : null}
 
       <p className="text-center text-sm text-(--color-muted-foreground)">
-        <a href="/" className="text-(--color-primary) underline">
+        <Link href="/" className="text-(--color-primary) underline">
           {tr("sharePage.back", lang)}
-        </a>
+        </Link>
       </p>
     </div>
   );

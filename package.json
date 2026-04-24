@@ -30,6 +30,7 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.2",
     "jspdf": "^4.2.1",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.462.0",
     "mysql2": "^3.11.5",
     "next": "^15.5.0",
