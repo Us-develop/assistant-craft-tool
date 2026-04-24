@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "serve": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
