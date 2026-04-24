@@ -7,7 +7,16 @@ export type Lang = (typeof LANGUAGES)[number];
  * Single source of truth for the wizard form shape.
  * Used for client validation, server validation, and the DB payload.
  */
+const contextDocumentSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().max(200),
+  text: z.string().max(25_000),
+});
+
 export const wizardSchema = z.object({
+  // Step 1 — Reference uploads (brand book, content strategy, …)
+  contextDocuments: z.array(contextDocumentSchema).max(6).default([]),
+
   // Step 1 — Domain
   domain: z.string().max(64).default(""),
   customDomain: z.string().max(200).default(""),

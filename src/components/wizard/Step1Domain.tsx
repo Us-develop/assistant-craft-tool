@@ -1,5 +1,6 @@
 "use client";
 
+import ContextDocumentUpload from "./ContextDocumentUpload";
 import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
 
@@ -23,6 +24,12 @@ export default function Step1Domain() {
         <h2 className="mb-1 text-2xl font-semibold">{tr("step1.title", lang)}</h2>
         <p className="text-(--color-muted-foreground)">{tr("step1.subtitle", lang)}</p>
       </div>
+
+      <ContextDocumentUpload
+        lang={lang}
+        documents={data.contextDocuments}
+        onChange={(contextDocuments) => updateData({ contextDocuments })}
+      />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {DOMAINS.map((d) => (
@@ -57,6 +64,9 @@ export default function Step1Domain() {
 
       <div className="info-box">
         <p className="text-sm">{tr("step1.info", lang)}</p>
+        <p className="mt-3 border-t border-(--color-border) pt-3 text-sm">
+          {tr("step1.guideTip", lang)}
+        </p>
       </div>
     </div>
   );

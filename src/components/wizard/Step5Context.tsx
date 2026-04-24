@@ -49,6 +49,10 @@ export default function Step5Context() {
           onChange={(e) => updateData({ brandPromise: e.target.value })}
         />
       </div>
+
+      <div className="info-box">
+        <p className="text-sm">{tr("step5.guideTip", lang)}</p>
+      </div>
     </div>
   );
 }

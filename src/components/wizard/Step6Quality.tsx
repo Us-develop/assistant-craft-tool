@@ -92,6 +92,9 @@ export default function Step6Quality() {
 
       <div className="info-box">
         <p className="text-sm">{tr("step6.info", lang)}</p>
+        <p className="mt-3 border-t border-(--color-border) pt-3 text-sm">
+          {tr("step6.guideTip", lang)}
+        </p>
       </div>
     </div>
   );

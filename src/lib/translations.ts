@@ -46,9 +46,43 @@ const t: TranslationMap = {
     nl: "Bijv. 'e-commerce productbeschrijvingen'",
     en: "E.g. 'e-commerce product descriptions'",
   },
+  "step1.uploadTitle": {
+    nl: "Referentiedocumenten (optioneel)",
+    en: "Reference documents (optional)",
+  },
+  "step1.uploadHint": {
+    nl: "Upload bv. een brandbook, contentstrategie of tone-of-voice document. PDF, TXT of Markdown — max. 4 MB per bestand. De tekst wordt gebruikt in je systeemprompt en door de AI-suggesties.",
+    en: "Upload e.g. a brand book, content strategy, or tone-of-voice doc. PDF, TXT, or Markdown — max 4 MB per file. Text is included in your system prompt and powers AI suggestions.",
+  },
+  "step1.uploadButton": {
+    nl: "Bestanden kiezen",
+    en: "Choose files",
+  },
+  "step1.uploadChars": { nl: "tekens", en: "chars" },
+  "step1.uploadRemove": { nl: "Verwijderen", en: "Remove" },
+  "step1.uploadErrorMaxFiles": {
+    nl: "Maximaal {n} bestanden.",
+    en: "At most {n} files.",
+  },
+  "step1.uploadErrorGeneric": {
+    nl: "Upload mislukt. Probeer een ander bestand.",
+    en: "Upload failed. Try another file.",
+  },
+  "step1.uploadErrorEmpty": {
+    nl: "Geen leesbare tekst in dit bestand.",
+    en: "No readable text in this file.",
+  },
+  "step1.uploadErrorTooLarge": {
+    nl: "Bestand te groot (max. 4 MB per bestand).",
+    en: "File too large (max 4 MB per file).",
+  },
   "step1.info": {
     nl: "Waarom dit belangrijk is: een gespecialiseerde assistent levert betere output dan een generalist. Hoe specifieker het domein, hoe relevanter de antwoorden.",
     en: "Why this matters: a specialized assistant delivers better output than a generalist. The more specific the domain, the more relevant the answers.",
+  },
+  "step1.guideTip": {
+    nl: "Uit de praktijkgids: begin met taak en gebruiker — wie zet de assistent in, en wat is de ene kerntaak? Benoem expliciet wat buiten scope valt. Eén smalle specialisatie wint vaker van een alleskunner.",
+    en: "From the practice guide: start with the task and user — who uses the assistant, and what is the one core job? Be explicit about what is out of scope. One narrow focus usually beats a generalist.",
   },
 
   "step2.subtitle": {
@@ -78,6 +112,10 @@ const t: TranslationMap = {
     nl: "Wanneer heeft de assistent goed werk geleverd? Bijv. 'als de output direct bruikbaar is zonder grote aanpassingen'",
     en: "When has the assistant done good work? E.g. 'when the output is directly usable without major adjustments'",
   },
+  "step2.guideTip": {
+    nl: "Uit de praktijkgids: omschrijf de rol als een vacature — functie, verantwoordelijkheden, en wat je níét verwacht. Die switch dwingt concreetheid. Liever expert in één opdracht dan overal gemiddeld.",
+    en: "From the practice guide: describe the role like a job post — function, responsibilities, and what you don’t expect. That forces specificity. Better an expert in one remit than mediocre everywhere.",
+  },
 
   "step3.subtitle": {
     nl: "Geef je assistent een filosofie. Zonder overtuiging klinkt het als een zoekmachine.",
@@ -106,6 +144,10 @@ const t: TranslationMap = {
     nl: "Waarom dit belangrijk is: zonder filosofie klinkt de assistent als een zoekmachine. Een kernovertuiging geeft richting aan elke output.",
     en: "Why this matters: without a philosophy the assistant sounds like a search engine. A core conviction gives direction to every output.",
   },
+  "step3.guideTip": {
+    nl: "Uit de praktijkgids: de systeemprompt is het DNA van je assistent — zonder duidelijke identiteit blijft het een lege schil. Kies één kern en bouw daarop: specialisatie levert vaker tevreden output dan eindeloze breedte.",
+    en: "From the practice guide: the system instruction is the assistant’s DNA — without a clear identity it’s an empty shell. Pick one core and build on it: specialization usually beats trying to cover everything.",
+  },
 
   "step4.subtitle": { nl: "Bepaal hoe je assistent klinkt.", en: "Define how your assistant sounds." },
   "step4.toneProfile": { nl: "Toonprofiel", en: "Tone profile" },
@@ -127,6 +169,10 @@ const t: TranslationMap = {
     nl: "Tip: voeg één voorbeeldzin toe die de perfecte toon illustreert. Dat helpt de assistent enorm.",
     en: "Tip: add one example sentence that illustrates the perfect tone. This helps the assistant enormously.",
   },
+  "step4.guideTip": {
+    nl: "Uit de praktijkgids: draai merkwaarden om in gedragsregels. 'Schrijf warm' is te vaag — geef zinnen die wél en géén toon mogen, dan leert het model van contrast, niet van een losse wens.",
+    en: "From the practice guide: turn brand values into behavior. 'Write warmly' is vague — add lines that match and that don’t, so the model learns from contrast, not a vague wish.",
+  },
 
   "step5.subtitle": {
     nl: "Vertel je assistent voor wie en waar het werkt.",
@@ -146,6 +192,10 @@ const t: TranslationMap = {
   "step5.brandPromisePlaceholder": {
     nl: "Wat beloof je je klanten? In één of twee zinnen.",
     en: "What do you promise your customers? In one or two sentences.",
+  },
+  "step5.guideTip": {
+    nl: "Uit de praktijkgids: verrijk met échte inhoud — doelgroep (ook emotioneel), merkbegrippen en productnamen. 'Houd rekening met de regels' zonder die regels in de instructie is nutteloos: het model kent enkel wat jij meegeeft.",
+    en: "From the practice guide: embed real content — audience (including emotionally), brand terms, and product names. 'Follow the rules' without the actual rules in the prompt is useless: the model only knows what you provide.",
   },
 
   "step6.subtitle": {
@@ -169,6 +219,10 @@ const t: TranslationMap = {
     nl: "Waarom dit belangrijk is: dit is de stap die de meeste builders overslaan. Een kwaliteitsfilter voorkomt dat je assistent middelmatige output levert.",
     en: "Why this matters: this is the step most builders skip. A quality filter prevents your assistant from delivering mediocre output.",
   },
+  "step6.guideTip": {
+    nl: "Uit de praktijkgids: test grensgevallen, laat iemand anders proberen en documenteer elke wijziging. Behandel de assistent als een nieuwe collega: bijsturen in de start is geen gebrek, maar normaal inloopproces.",
+    en: "From the practice guide: test edge cases, have someone who didn’t build it try it, and log each change. Treat the assistant like a new hire — early coaching is normal onboarding, not failure.",
+  },
 
   "step7.subtitle": { nl: "Stel duidelijke grenzen voor je assistent.", en: "Set clear boundaries for your assistant." },
   "step7.alwaysDo": { nl: "Altijd doen", en: "Always do" },
@@ -190,6 +244,10 @@ const t: TranslationMap = {
   "step7.missingInfoPlaceholder": {
     nl: "Wat moet de assistent doen als de briefing onvolledig is?",
     en: "What should the assistant do when the briefing is incomplete?",
+  },
+  "step7.guideTip": {
+    nl: "Uit de praktijkgids: regels zijn vangnetten — zonder expliciet altijd/nooit en duidelijk ontbrekende-info-gedrag improviseert het model. Zet compliance concreet. Plan herbekeuring wanneer je merk of regels wijzigen.",
+    en: "From the practice guide: rules are safety nets — without clear always/never and missing-info behavior, the model improvises. Make compliance explicit. Revisit when your brand or rules change.",
   },
 
   "step8.subtitle": {
@@ -223,6 +281,10 @@ const t: TranslationMap = {
   "step8.kickoffPlaceholder": {
     nl: "Bijv. 'Hoi! Ik ben je email copywriter. Vertel me over je doelgroep, het doel van je mail, en eventuele specifieke eisen — dan ga ik aan de slag.'",
     en: "E.g. 'Hi! I'm your email copywriter. Tell me about your target audience, the goal of your email, and any specific requirements — and I'll get to work.'",
+  },
+  "step8.guideTip": {
+    nl: "Uit de praktijkgids: beschrijf je standaardlevering concreet (structuur, lengte, varianten) — niet alleen 'geef een tekst'. In de uiteindelijke prompt helpt Markdown (koppen, lijsten); houd rekening met een begrensde lengte (o.a. plafond rond 8.000 tekens) en kies focus boven volledigheid.",
+    en: "From the practice guide: describe the default deliverable concretely (structure, length, variants) — not just 'give text'. In the final prompt, Markdown (headings, lists) helps; keep the full system block within a sensible length (often ~8,000 characters) and favor focus over trying to say everything.",
   },
 
   "output.title": { nl: "Je AI-assistent is klaar!", en: "Your AI assistant is ready!" },

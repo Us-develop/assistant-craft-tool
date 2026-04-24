@@ -1,3 +1,4 @@
+import { formatDocumentsForGeneratedMarkdown } from "./contextDocuments";
 import type { WizardData, Lang } from "./wizardSchema";
 import { tr } from "./translations";
 
@@ -15,6 +16,11 @@ export function generateSystemInstruction(data: WizardData, lang: Lang): string 
   lines.push(`# ${data.assistantName || "AI Assistant"}`);
   if (data.description) lines.push(`\n${data.description}`);
   if (domain) lines.push(`\n**${lang === "nl" ? "Domein" : "Domain"}:** ${domain}`);
+
+  const referenceMd = formatDocumentsForGeneratedMarkdown(data, lang);
+  if (referenceMd) {
+    lines.push(referenceMd);
+  }
 
   // Role
   if (

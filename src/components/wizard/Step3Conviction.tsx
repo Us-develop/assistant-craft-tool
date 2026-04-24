@@ -51,6 +51,9 @@ export default function Step3Conviction() {
 
       <div className="info-box">
         <p className="text-sm">{tr("step3.info", lang)}</p>
+        <p className="mt-3 border-t border-(--color-border) pt-3 text-sm">
+          {tr("step3.guideTip", lang)}
+        </p>
       </div>
     </div>
   );

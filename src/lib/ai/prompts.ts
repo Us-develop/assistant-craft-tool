@@ -1,3 +1,4 @@
+import { formatDocumentsForAiPrompt } from "../contextDocuments";
 import type { WizardData, Lang } from "../wizardSchema";
 
 export const STEP_CONTEXT: Record<number, { name: string; description: string }> = {
@@ -66,7 +67,15 @@ function formatCurrentData(data: WizardData): string {
     parts.push(`Assistant name: ${data.assistantName}`);
   }
 
-  return parts.length > 0 ? parts.join("\n") : "No data entered yet.";
+  const base = parts.length > 0 ? parts.join("\n") : "No data entered yet.";
+  const docBlock = formatDocumentsForAiPrompt(data);
+  if (!docBlock) {
+    return base;
+  }
+  if (base === "No data entered yet.") {
+    return docBlock;
+  }
+  return `${base}\n\n${docBlock}`;
 }
 
 export function buildSuggestPrompt(

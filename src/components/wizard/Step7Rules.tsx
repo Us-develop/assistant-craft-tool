@@ -52,6 +52,10 @@ export default function Step7Rules() {
           onChange={(e) => updateData({ missingInfoProtocol: e.target.value })}
         />
       </div>
+
+      <div className="info-box">
+        <p className="text-sm">{tr("step7.guideTip", lang)}</p>
+      </div>
     </div>
   );
 }

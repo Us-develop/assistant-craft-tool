@@ -66,6 +66,10 @@ export default function Step2Role() {
           onChange={(e) => updateData({ successDefinition: e.target.value })}
         />
       </div>
+
+      <div className="info-box">
+        <p className="text-sm">{tr("step2.guideTip", lang)}</p>
+      </div>
     </div>
   );
 }

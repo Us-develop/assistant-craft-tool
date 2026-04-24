@@ -87,6 +87,10 @@ export default function Step8Output() {
           onChange={(e) => updateData({ kickoffMessage: e.target.value })}
         />
       </div>
+
+      <div className="info-box">
+        <p className="text-sm">{tr("step8.guideTip", lang)}</p>
+      </div>
     </div>
   );
 }

@@ -69,6 +69,9 @@ export default function Step4Tone() {
 
       <div className="tip-box">
         <p className="text-sm">{tr("step4.tip", lang)}</p>
+        <p className="mt-3 border-t border-(--color-border) pt-3 text-sm">
+          {tr("step4.guideTip", lang)}
+        </p>
       </div>
     </div>
   );
