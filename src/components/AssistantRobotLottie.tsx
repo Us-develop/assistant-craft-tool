@@ -1,17 +1,11 @@
 "use client";
 
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Image from "next/image";
-import Lottie, { type LottieRefCurrentProps } from "lottie-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  isLoopingMood,
-  segmentForMood,
-  type LottieAnimData,
-  type RobotMood,
-} from "@/lib/assistantRobotLottie";
-import { loadAssistantRobotLottieJson } from "@/lib/assistantRobotLottieCache";
+import { useEffect, useState } from "react";
 
 const FALLBACK = "/ai-assistant-robot.png";
+const DEFAULT_LOTTIE_SRC = "/lottie/ai-assistant-robot.lottie";
 
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
@@ -25,84 +19,54 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
+function resolveLottieSrc(): string {
+  const u = process.env.NEXT_PUBLIC_ASSISTANT_LOTTIE_URL;
+  if (typeof u === "string" && u.length > 0) {
+    return u;
+  }
+  return DEFAULT_LOTTIE_SRC;
+}
+
 export type AssistantRobotLottieProps = {
-  mood: RobotMood;
   /** Shorthand sizes used by the AI panel */
   variant: "fab" | "header" | "empty";
   className?: string;
-  onOneShotEnd?: () => void;
 };
 
 const dimensions: Record<
   AssistantRobotLottieProps["variant"],
-  { w: number; h: number; className: string }
+  { w: number; h: number; className: string; canvasClass: string }
 > = {
   fab: {
     w: 90,
     h: 108,
-    className: "h-[5.25rem] w-auto max-w-[4.5rem] object-contain object-bottom",
+    className: "h-[5.25rem] w-full max-w-[4.5rem] object-contain object-bottom",
+    canvasClass: "h-full w-full max-h-[5.25rem]",
   },
-  header: { w: 32, h: 38, className: "h-8 w-7 shrink-0 object-contain object-bottom" },
-  empty: { h: 80, w: 96, className: "h-16 w-auto object-contain object-bottom" },
+  header: {
+    w: 32,
+    h: 38,
+    className: "h-8 w-7 shrink-0 object-contain object-bottom",
+    canvasClass: "h-8 w-7",
+  },
+  empty: {
+    h: 80,
+    w: 96,
+    className: "h-16 w-auto object-contain object-bottom",
+    canvasClass: "h-16 w-20",
+  },
 };
 
 /**
- * Renders the assistant mascot as Lottie (markers: idle, wave, smile, jump, pace).
- * Replace `public/lottie/ai-assistant-robot.json` with your LottieFiles export, or set
- * `NEXT_PUBLIC_ASSISTANT_LOTTIE_URL` to a hosted JSON.
+ * Renders the assistant bot from `public/lottie/ai-assistant-robot.lottie` (dotLottie).
+ * Override with `NEXT_PUBLIC_ASSISTANT_LOTTIE_URL` (JSON or .lottie URL). Reduced motion: PNG fallback.
  */
-export default function AssistantRobotLottie({
-  mood,
-  variant,
-  className = "",
-  onOneShotEnd,
-}: AssistantRobotLottieProps) {
-  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
-  const [animationData, setAnimationData] = useState<LottieAnimData | null>(null);
-  const [loadFailed, setLoadFailed] = useState(false);
+export default function AssistantRobotLottie({ variant, className = "" }: AssistantRobotLottieProps) {
   const reducedMotion = usePrefersReducedMotion();
-  const moodRef = useRef(mood);
-  const dataRef = useRef<LottieAnimData | null>(null);
-  moodRef.current = mood;
-  dataRef.current = animationData;
-
-  const applyMood = useCallback((m: RobotMood, data: LottieAnimData) => {
-    const inst = lottieRef.current;
-    if (!inst?.playSegments) return;
-    const item = inst.animationItem;
-    if (item) {
-      item.loop = isLoopingMood(m);
-    }
-    const [a, b] = segmentForMood(data, m);
-    inst.stop();
-    inst.playSegments([a, b], true);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    let cancelled = false;
-    void loadAssistantRobotLottieJson().then((j) => {
-      if (cancelled) return;
-      if (j) setAnimationData(j);
-      else setLoadFailed(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [reducedMotion]);
-
-  useEffect(() => {
-    if (!animationData || reducedMotion) return;
-    requestAnimationFrame(() => applyMood(mood, animationData));
-  }, [animationData, mood, applyMood, reducedMotion]);
-
-  const handleComplete = useCallback(() => {
-    if (isLoopingMood(moodRef.current)) return;
-    onOneShotEnd?.();
-  }, [onOneShotEnd]);
-
   const dim = dimensions[variant];
-  if (reducedMotion || loadFailed || !animationData) {
+  const src = resolveLottieSrc();
+
+  if (reducedMotion) {
     return (
       <Image
         src={FALLBACK}
@@ -117,21 +81,16 @@ export default function AssistantRobotLottie({
 
   return (
     <div
-      className={`flex items-end justify-center ${className}`}
+      className={`flex items-end justify-center overflow-hidden ${className}`}
       style={{ width: dim.w, height: dim.h }}
     >
-      <Lottie
-        lottieRef={lottieRef}
-        animationData={animationData as object}
-        loop={false}
-        className="h-full w-full [&_svg]:h-full [&_svg]:w-auto"
-        onComplete={handleComplete}
-        onDOMLoaded={() => {
-          const d = dataRef.current;
-          if (d) {
-            requestAnimationFrame(() => applyMood(moodRef.current, d));
-          }
-        }}
+      <DotLottieReact
+        src={src}
+        loop
+        autoplay
+        className={dim.canvasClass}
+        style={{ maxWidth: "100%", maxHeight: "100%" }}
+        renderConfig={{ autoResize: true }}
       />
     </div>
   );

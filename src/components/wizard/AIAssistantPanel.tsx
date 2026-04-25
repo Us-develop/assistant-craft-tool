@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useWizard } from "./WizardContext";
 import { X, Send, Loader2 } from "lucide-react";
 import AssistantRobotLottie from "@/components/AssistantRobotLottie";
-import type { RobotMood } from "@/lib/assistantRobotLottie";
 
 interface ChatMessage {
   id: string;
@@ -55,39 +54,15 @@ export default function AIAssistantPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
-  const [robotMood, setRobotMood] = useState<RobotMood>("idle");
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const hasSmiledRef = useRef(false);
 
   useEffect(() => {
     setMessages([]);
-    hasSmiledRef.current = false;
-    setRobotMood("idle");
   }, [step]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  // Attention: jump, and occasional “pace” while the FAB is visible
-  useEffect(() => {
-    if (isOpen) return;
-    const firstJump = window.setTimeout(() => {
-      setRobotMood("jump");
-    }, 5500);
-    const jumpEvery = window.setInterval(() => {
-      setRobotMood("jump");
-    }, 15_000);
-    const paceEvery = window.setInterval(() => {
-      setRobotMood("pace");
-      window.setTimeout(() => setRobotMood("idle"), 4200);
-    }, 44_000);
-    return () => {
-      clearTimeout(firstJump);
-      clearInterval(jumpEvery);
-      clearInterval(paceEvery);
-    };
-  }, [isOpen]);
 
   const handleFabMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = fabRef.current;
@@ -102,12 +77,8 @@ export default function AIAssistantPanel() {
     setTilt({ x: 0, y: 0 });
   };
 
-  const openWithMicroInteraction = () => {
-    setRobotMood("wave");
-    window.setTimeout(() => {
-      setIsOpen(true);
-      setRobotMood("idle");
-    }, 420);
+  const openPanel = () => {
+    setIsOpen(true);
   };
 
   const hint = STEP_HINTS[step]?.[lang] || STEP_HINTS[step]?.en || "";
@@ -175,10 +146,6 @@ export default function AIAssistantPanel() {
           );
         }
 
-        if (!hasSmiledRef.current) {
-          hasSmiledRef.current = true;
-          setRobotMood("smile");
-        }
       } catch (error) {
         console.error("Chat error:", error);
         setMessages((prev) => [
@@ -210,34 +177,25 @@ export default function AIAssistantPanel() {
         className="pointer-events-auto fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6"
         onMouseLeave={handleFabLeave}
       >
-        <div className={`relative ${robotMood === "jump" ? "ai-robot-fab-jump" : ""}`}>
-          <div
-            className={robotMood === "pace" ? "ai-robot-lottie-pace" : ""}
+        <div className="relative">
+          <button
+            ref={fabRef}
+            type="button"
+            onClick={openPanel}
+            onMouseMove={handleFabMove}
+            className="group relative flex h-[5.5rem] w-[4.5rem] cursor-pointer items-end justify-center overflow-visible rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-0 shadow-lg transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
+            style={{ perspective: 520 }}
+            aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
           >
-            <button
-              ref={fabRef}
-              type="button"
-              onClick={openWithMicroInteraction}
-              onMouseMove={handleFabMove}
-              className="group relative flex h-[5.5rem] w-[4.5rem] cursor-pointer items-end justify-center overflow-visible rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-0 shadow-lg transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
-              style={{ perspective: 520 }}
-              aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
+            <div
+              className="h-full w-full transition-transform duration-150 ease-out group-active:scale-95"
+              style={{
+                transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+              }}
             >
-              <div
-                className="h-full w-full transition-transform duration-150 ease-out group-active:scale-95"
-                style={{
-                  transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-                }}
-              >
-                <AssistantRobotLottie
-                  mood={robotMood}
-                  variant="fab"
-                  className="pointer-events-none"
-                  onOneShotEnd={() => setRobotMood("idle")}
-                />
-              </div>
-            </button>
-          </div>
+              <AssistantRobotLottie variant="fab" className="pointer-events-none" />
+            </div>
+          </button>
         </div>
       </div>
     );
@@ -247,17 +205,14 @@ export default function AIAssistantPanel() {
     <div className="fixed bottom-4 right-4 z-50 flex w-[380px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl sm:bottom-6 sm:right-6 sm:max-w-[calc(100vw-3rem)]">
       <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-primary) px-4 py-3 text-(--color-primary-foreground)">
         <div className="flex items-center gap-2">
-          <AssistantRobotLottie mood={robotMood} variant="header" className="shrink-0" />
+          <AssistantRobotLottie variant="header" className="shrink-0" />
           <span className="font-medium">
             {lang === "nl" ? "AI Assistent" : "AI Assistant"}
           </span>
         </div>
         <button
           type="button"
-          onClick={() => {
-            setIsOpen(false);
-            setRobotMood("idle");
-          }}
+          onClick={() => setIsOpen(false)}
           className="rounded-lg p-1 transition-colors hover:bg-(--color-neutral-80)"
           aria-label={lang === "nl" ? "Sluit" : "Close"}
         >
@@ -269,7 +224,7 @@ export default function AIAssistantPanel() {
         {messages.length === 0 && (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             <div className="flex h-20 w-20 items-end justify-center rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-1 shadow-sm">
-              <AssistantRobotLottie mood={robotMood} variant="empty" />
+              <AssistantRobotLottie variant="empty" />
             </div>
             <div>
               <p className="text-sm font-medium text-(--color-foreground)">
