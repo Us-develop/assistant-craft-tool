@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 const FALLBACK = "/ai-assistant-robot.png";
 const DEFAULT_LOTTIE_SRC = "/lottie/ai-assistant-robot.lottie";
 
+/** Floating launcher: exact 30rem square per design */
+const FAB_SIZE_CLASS = "h-[30rem] w-[30rem]";
+
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -33,15 +36,17 @@ export type AssistantRobotLottieProps = {
   className?: string;
 };
 
+const FAB_PX = 480; // 30rem at 16px root, for Next/Image
+
 const dimensions: Record<
   AssistantRobotLottieProps["variant"],
   { w: number; h: number; className: string; canvasClass: string }
 > = {
   fab: {
-    w: 90,
-    h: 108,
-    className: "h-[5.25rem] w-full max-w-[4.5rem] object-contain object-bottom",
-    canvasClass: "h-full w-full max-h-[5.25rem]",
+    w: FAB_PX,
+    h: FAB_PX,
+    className: `${FAB_SIZE_CLASS} object-contain object-bottom`,
+    canvasClass: "h-full w-full",
   },
   header: {
     w: 32,
@@ -50,8 +55,8 @@ const dimensions: Record<
     canvasClass: "h-8 w-7",
   },
   empty: {
-    h: 80,
     w: 96,
+    h: 80,
     className: "h-16 w-auto object-contain object-bottom",
     canvasClass: "h-16 w-20",
   },
@@ -65,6 +70,7 @@ export default function AssistantRobotLottie({ variant, className = "" }: Assist
   const reducedMotion = usePrefersReducedMotion();
   const dim = dimensions[variant];
   const src = resolveLottieSrc();
+  const isFab = variant === "fab";
 
   if (reducedMotion) {
     return (
@@ -81,8 +87,10 @@ export default function AssistantRobotLottie({ variant, className = "" }: Assist
 
   return (
     <div
-      className={`flex items-end justify-center overflow-hidden ${className}`}
-      style={{ width: dim.w, height: dim.h }}
+      className={`flex items-end justify-center overflow-hidden ${
+        isFab ? FAB_SIZE_CLASS : ""
+      } ${className}`}
+      style={!isFab ? { width: dim.w, height: dim.h } : undefined}
     >
       <DotLottieReact
         src={src}

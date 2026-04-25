@@ -183,12 +183,12 @@ export default function AIAssistantPanel() {
             type="button"
             onClick={openPanel}
             onMouseMove={handleFabMove}
-            className="group relative flex h-20 w-16 cursor-pointer items-end justify-center overflow-visible rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-0 shadow-lg transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2 sm:h-[5.5rem] sm:w-[4.5rem] touch-manipulation"
+            className="group relative cursor-pointer border-0 bg-transparent p-0 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2 touch-manipulation"
             style={{ perspective: 520 }}
             aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
           >
             <div
-              className="h-full w-full transition-transform duration-150 ease-out group-active:scale-95"
+              className="transition-transform duration-150 ease-out group-active:scale-[0.98]"
               style={{
                 transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
               }}
@@ -225,7 +225,7 @@ export default function AIAssistantPanel() {
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <div className="flex h-20 w-20 items-end justify-center rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-1 shadow-sm">
+            <div className="flex items-end justify-center">
               <AssistantRobotLottie variant="empty" />
             </div>
             <div>
