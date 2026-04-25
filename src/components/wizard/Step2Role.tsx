@@ -17,7 +17,7 @@ export default function Step2Role() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-1 text-2xl font-semibold">{tr("step2.title", lang)}</h2>
+        <h2 className="mb-1 text-xl font-semibold sm:text-2xl">{tr("step2.title", lang)}</h2>
         <p className="text-(--color-muted-foreground)">{tr("step2.subtitle", lang)}</p>
       </div>
 

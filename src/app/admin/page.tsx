@@ -43,21 +43,21 @@ export default async function AdminPage({
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <main className="wizard-shell px-4 py-8">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <main className="wizard-shell py-6 sm:py-8">
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Submissions</h1>
           <p className="text-sm text-(--color-muted-foreground)">
             Logged entries from the Assistant Craft Tool wizard.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <span className="text-sm text-(--color-muted-foreground)">
             {total.toLocaleString()} total
           </span>
           <a
             href="/api/admin/submissions/export"
-            className="btn-primary text-sm"
+            className="btn-primary w-full text-center text-sm sm:w-auto"
             download
           >
             Export CSV

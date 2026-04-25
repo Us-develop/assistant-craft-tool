@@ -30,9 +30,9 @@ export default function SharePageClient({ row }: { row: PromptShareRow }) {
   };
 
   return (
-    <div className="mx-auto min-h-screen max-w-3xl space-y-8 px-4 py-10">
+    <div className="wizard-shell min-h-dvh space-y-6 py-8 sm:space-y-8 sm:py-10">
       <div>
-        <h1 className="text-2xl font-semibold text-(--color-foreground)">
+        <h1 className="text-xl font-semibold text-(--color-foreground) sm:text-2xl">
           {tr("sharePage.title", lang)}
         </h1>
         <p className="mt-1 text-sm text-(--color-muted-foreground)">{tr("sharePage.sub", lang)}</p>
@@ -41,11 +41,11 @@ export default function SharePageClient({ row }: { row: PromptShareRow }) {
         )}
       </div>
 
-      <section className="card-elevated space-y-3 p-6">
+      <section className="card-elevated space-y-3 p-4 sm:p-6">
         <h2 className="text-sm font-semibold text-(--color-foreground)">
           {tr("output.tabInstruction", lang)}
         </h2>
-        <pre className="max-h-[420px] overflow-y-auto font-mono text-sm leading-relaxed whitespace-pre-wrap">
+        <pre className="max-h-[min(420px,50vh)] overflow-y-auto break-words font-mono text-xs leading-relaxed whitespace-pre-wrap sm:max-h-[420px] sm:text-sm">
           {row.generatedPrompt}
         </pre>
         <button
@@ -58,11 +58,11 @@ export default function SharePageClient({ row }: { row: PromptShareRow }) {
       </section>
 
       {row.kickoffMessage ? (
-        <section className="card-elevated space-y-3 p-6">
+        <section className="card-elevated space-y-3 p-4 sm:p-6">
           <h2 className="text-sm font-semibold text-(--color-foreground)">
             {tr("output.tabKickoff", lang)}
           </h2>
-          <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap">
+          <pre className="break-words font-mono text-xs leading-relaxed whitespace-pre-wrap sm:text-sm">
             {row.kickoffMessage}
           </pre>
           <button

@@ -11,7 +11,7 @@ export default function Step5Context() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-1 text-2xl font-semibold">{tr("step5.title", lang)}</h2>
+        <h2 className="mb-1 text-xl font-semibold sm:text-2xl">{tr("step5.title", lang)}</h2>
         <p className="text-(--color-muted-foreground)">{tr("step5.subtitle", lang)}</p>
       </div>
 

@@ -6,6 +6,8 @@ const t: TranslationMap = {
   "app.title": { nl: "Assistant Craft Tool", en: "Assistant Craft Tool" },
   "header.tagline": { nl: "Co-creating digital impact", en: "Co-creating digital impact" },
 
+  "progress.stepOf": { nl: "Stap {n} van {total}", en: "Step {n} of {total}" },
+
   "nav.next": { nl: "Volgende", en: "Next" },
   "nav.back": { nl: "Terug", en: "Back" },
   "nav.finish": { nl: "Genereer instructie", en: "Generate instruction" },

@@ -99,7 +99,8 @@
   --font-display: "Bricolage Grotesque", "Public Sans", system-ui, sans-serif;
 
   /* — Layout — */
-  --wizard-width: min(80vw, 1180px);
+  --wizard-width: 100%;
+  --wizard-max: 1180px;
 }
 
 @layer base {
@@ -118,6 +119,7 @@
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    overflow-x: clip;
   }
 
   h1,
@@ -173,11 +175,15 @@
 }
 
 @layer components {
-  /* Shared wizard/page shell: 80% of the viewport, capped at the design
-     system's content-width. Use instead of `mx-auto max-w-3xl`. */
+  /* Shared wizard/page shell: full width with side gutters, capped at design
+     max width. Safe area for notched devices. */
   .wizard-shell {
     width: var(--wizard-width);
+    max-width: var(--wizard-max);
     margin-inline: auto;
+    box-sizing: border-box;
+    padding-inline: max(1rem, env(safe-area-inset-left, 0px))
+      max(1rem, env(safe-area-inset-right, 0px));
   }
 
   /* ——— Surfaces ——— */
@@ -212,13 +218,22 @@
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.5rem;
-    padding: 0.75rem 2rem;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.25rem;
     border: 1px solid var(--color-primary);
     border-radius: var(--radius-pill);
+    touch-action: manipulation;
     transition:
       background 0.2s ease,
       border-color 0.2s ease,
       transform 0.1s ease;
+  }
+
+  @media (min-width: 640px) {
+    .btn-primary {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
   }
 
   .btn-primary:hover:not(:disabled) {
@@ -247,14 +262,23 @@
     font-weight: 500;
     font-size: 1rem;
     line-height: 1.5rem;
-    padding: 0.75rem 2rem;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.25rem;
     border: 1px solid var(--color-foreground);
     border-radius: var(--radius-pill);
+    touch-action: manipulation;
     transition:
       background 0.2s ease,
       color 0.2s ease,
       border-color 0.2s ease,
       transform 0.1s ease;
+  }
+
+  @media (min-width: 640px) {
+    .btn-ghost {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
   }
 
   .btn-ghost:hover:not(:disabled) {
@@ -375,7 +399,7 @@
   /* ——— Selection cards (Step 1 domain tiles, etc.) ——— */
 
   .selection-card {
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem 1rem;
     border-radius: var(--radius-card);
     background: var(--color-card);
     border: 1px solid var(--color-border);
@@ -388,10 +412,18 @@
     cursor: pointer;
   }
 
-  .selection-card:hover:not(.active) {
-    box-shadow: var(--shadow-card-hover);
-    border-color: var(--color-foreground);
-    transform: translateY(-2px);
+  @media (min-width: 640px) {
+    .selection-card {
+      padding: 1.5rem 1.25rem;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .selection-card:hover:not(.active) {
+      box-shadow: var(--shadow-card-hover);
+      border-color: var(--color-foreground);
+      transform: translateY(-2px);
+    }
   }
 
   .selection-card.active {

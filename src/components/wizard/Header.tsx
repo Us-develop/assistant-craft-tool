@@ -8,8 +8,8 @@ export default function Header() {
   const { lang, setLang } = useWizard();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-card)/85 backdrop-blur-md">
-      <div className="wizard-shell flex items-center justify-between px-4 py-3">
+    <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-card)/85 pt-[max(0.75rem,env(safe-area-inset-top,0px))] backdrop-blur-md">
+      <div className="wizard-shell flex items-center justify-between py-3">
         <div className="flex items-center gap-3">
           <Image
             src="/logo-us.svg"

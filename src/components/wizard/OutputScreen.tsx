@@ -153,10 +153,12 @@ export default function OutputScreen() {
   };
 
   return (
-    <div className="wizard-shell space-y-6 px-4 py-8">
-      <h2 className="text-center text-2xl font-semibold">{tr("output.title", lang)}</h2>
+    <div className="wizard-shell space-y-6 py-6 sm:py-8">
+      <h2 className="text-center text-xl font-semibold sm:text-2xl">
+        {tr("output.title", lang)}
+      </h2>
 
-      <div className="card-elevated space-y-4 p-6">
+      <div className="card-elevated space-y-4 p-4 sm:p-6">
         <div className="space-y-1">
           <h3 className="text-lg font-semibold">{data.assistantName || "—"}</h3>
           {domain && <p className="text-sm text-(--color-muted-foreground)">{domain}</p>}
@@ -211,7 +213,7 @@ export default function OutputScreen() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+              className={`flex-1 px-2 py-2.5 text-xs font-medium transition-colors min-[400px]:px-4 min-[400px]:py-3 min-[400px]:text-sm ${
                 activeTab === tab
                   ? "border-b-2 border-(--color-primary) text-(--color-primary)"
                   : "text-(--color-muted-foreground)"
@@ -222,13 +224,13 @@ export default function OutputScreen() {
           ))}
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {activeTab === "instruction" ? (
-            <pre className="max-h-[500px] overflow-y-auto font-mono text-sm leading-relaxed whitespace-pre-wrap">
+            <pre className="max-h-[min(500px,55vh)] overflow-y-auto break-words font-mono text-xs leading-relaxed whitespace-pre-wrap sm:max-h-[500px] sm:text-sm">
               {instruction}
             </pre>
           ) : (
-            <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap">
+            <pre className="break-words font-mono text-xs leading-relaxed whitespace-pre-wrap sm:text-sm">
               {data.kickoffMessage || "—"}
             </pre>
           )}
@@ -279,8 +281,12 @@ export default function OutputScreen() {
         </div>
       </div>
 
-      <div className="flex justify-center gap-4">
-        <button type="button" onClick={resetData} className="btn-ghost">
+      <div className="flex flex-col gap-3 min-[400px]:flex-row min-[400px]:justify-center min-[400px]:gap-4">
+        <button
+          type="button"
+          onClick={resetData}
+          className="btn-ghost w-full min-[400px]:w-auto"
+        >
           {tr("nav.startOver", lang)}
         </button>
         <button
@@ -289,7 +295,7 @@ export default function OutputScreen() {
             setShowOutput(false);
             setStep(1);
           }}
-          className="btn-primary"
+          className="btn-primary w-full min-[400px]:w-auto"
         >
           <span className="material-icons-outlined text-sm">edit</span>
           {tr("nav.edit", lang)}

@@ -174,7 +174,7 @@ export default function AIAssistantPanel() {
   if (!isOpen) {
     return (
       <div
-        className="pointer-events-auto fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6"
+        className="pointer-events-auto fixed z-50 [bottom:max(1rem,env(safe-area-inset-bottom,0px))] [right:max(1rem,env(safe-area-inset-right,0px))] sm:bottom-6 sm:right-6"
         onMouseLeave={handleFabLeave}
       >
         <div className="relative">
@@ -183,7 +183,7 @@ export default function AIAssistantPanel() {
             type="button"
             onClick={openPanel}
             onMouseMove={handleFabMove}
-            className="group relative flex h-[5.5rem] w-[4.5rem] cursor-pointer items-end justify-center overflow-visible rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-0 shadow-lg transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
+            className="group relative flex h-20 w-16 cursor-pointer items-end justify-center overflow-visible rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-0 shadow-lg transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2 sm:h-[5.5rem] sm:w-[4.5rem] touch-manipulation"
             style={{ perspective: 520 }}
             aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
           >
@@ -202,8 +202,10 @@ export default function AIAssistantPanel() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex w-[380px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl sm:bottom-6 sm:right-6 sm:max-w-[calc(100vw-3rem)]">
-      <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-primary) px-4 py-3 text-(--color-primary-foreground)">
+    <div
+      className="fixed z-50 flex w-auto flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl [bottom:max(0.75rem,env(safe-area-inset-bottom,0px))] [left:max(0.75rem,env(safe-area-inset-left,0px))] [right:max(0.75rem,env(safe-area-inset-right,0px))] max-sm:h-[min(32rem,85dvh)] max-sm:max-h-[85dvh] sm:bottom-6 sm:left-auto sm:right-6 sm:h-[32rem] sm:max-h-[min(32rem,90dvh)] sm:w-[min(380px,calc(100vw-1.5rem))] sm:max-w-[min(380px,calc(100vw-1.5rem))]"
+    >
+      <div className="flex shrink-0 items-center justify-between border-b border-(--color-border) bg-(--color-primary) px-4 py-3 text-(--color-primary-foreground)">
         <div className="flex items-center gap-2">
           <AssistantRobotLottie variant="header" className="shrink-0" />
           <span className="font-medium">
@@ -220,7 +222,7 @@ export default function AIAssistantPanel() {
         </button>
       </div>
 
-      <div className="flex h-80 flex-col gap-3 overflow-y-auto p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
         {messages.length === 0 && (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             <div className="flex h-20 w-20 items-end justify-center rounded-2xl border border-(--color-border) bg-(--color-neutral-00) p-1 shadow-sm">
@@ -242,7 +244,7 @@ export default function AIAssistantPanel() {
               <button
                 type="button"
                 onClick={handleHintClick}
-                className="rounded-full border border-(--color-border) bg-(--color-card) px-3 py-1.5 text-xs text-(--color-foreground) transition-colors hover:bg-(--color-muted)"
+                className="max-w-full break-words rounded-full border border-(--color-border) bg-(--color-card) px-3 py-1.5 text-left text-xs text-(--color-foreground) transition-colors hover:bg-(--color-muted) sm:text-center"
               >
                 {hint}
               </button>
@@ -281,14 +283,17 @@ export default function AIAssistantPanel() {
 
       <form
         onSubmit={handleFormSubmit}
-        className="flex items-center gap-2 border-t border-(--color-border) p-3"
+        className="flex shrink-0 items-center gap-2 border-t border-(--color-border) p-3"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={lang === "nl" ? "Stel een vraag..." : "Ask a question..."}
-          className="flex-1 rounded-full border border-(--color-border) bg-(--color-card) px-4 py-2 text-sm outline-none transition-colors focus:border-(--color-foreground)"
+          className="min-w-0 flex-1 rounded-full border border-(--color-border) bg-(--color-card) px-4 py-2.5 text-base outline-none transition-colors focus:border-(--color-foreground) sm:text-sm"
+          autoComplete="off"
+          autoCorrect="off"
+          enterKeyHint="send"
           disabled={isLoading}
         />
         <button

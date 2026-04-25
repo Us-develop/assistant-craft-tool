@@ -9,7 +9,7 @@ export default function Step8Output() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-1 text-2xl font-semibold">{tr("step8.title", lang)}</h2>
+        <h2 className="mb-1 text-xl font-semibold sm:text-2xl">{tr("step8.title", lang)}</h2>
         <p className="text-(--color-muted-foreground)">{tr("step8.subtitle", lang)}</p>
       </div>
 

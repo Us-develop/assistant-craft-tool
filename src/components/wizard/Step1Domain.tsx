@@ -21,7 +21,7 @@ export default function Step1Domain() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-1 text-2xl font-semibold">{tr("step1.title", lang)}</h2>
+        <h2 className="mb-1 text-xl font-semibold sm:text-2xl">{tr("step1.title", lang)}</h2>
         <p className="text-(--color-muted-foreground)">{tr("step1.subtitle", lang)}</p>
       </div>
 
@@ -31,7 +31,7 @@ export default function Step1Domain() {
         onChange={(contextDocuments) => updateData({ contextDocuments })}
       />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {DOMAINS.map((d) => (
           <button
             key={d}
