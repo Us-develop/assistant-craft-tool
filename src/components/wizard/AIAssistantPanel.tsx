@@ -11,6 +11,34 @@ interface ChatMessage {
   content: string;
 }
 
+const FAB_OFFSET_STORAGE_KEY = "act-assistant-fab-offset";
+const DRAG_THRESHOLD_PX = 10;
+const FAB_VIEWPORT_PAD = 12;
+
+function clampFabTranslate(
+  wrapEl: HTMLElement | null,
+  x: number,
+  y: number,
+): { x: number; y: number } {
+  if (!wrapEl || typeof window === "undefined") return { x, y };
+
+  const prev = wrapEl.style.transform;
+  wrapEl.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  const r = wrapEl.getBoundingClientRect();
+  wrapEl.style.transform = prev;
+
+  const pad = FAB_VIEWPORT_PAD;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let nx = x;
+  let ny = y;
+  if (r.left < pad) nx += pad - r.left;
+  if (r.top < pad) ny += pad - r.top;
+  if (r.right > vw - pad) nx -= r.right - (vw - pad);
+  if (r.bottom > vh - pad) ny -= r.bottom - (vh - pad);
+  return { x: nx, y: ny };
+}
+
 const STEP_HINTS: Record<number, { en: string; nl: string }> = {
   1: {
     en: "What domain should my assistant specialize in?",
@@ -54,7 +82,33 @@ export default function AIAssistantPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
+  const fabWrapRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [fabTranslate, setFabTranslate] = useState({ x: 0, y: 0 });
+  const fabDragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    origin: { x: number; y: number };
+    dragging: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem(FAB_OFFSET_STORAGE_KEY);
+      if (!raw) return;
+      const p = JSON.parse(raw) as { x?: unknown; y?: unknown };
+      if (typeof p.x !== "number" || typeof p.y !== "number") return;
+      requestAnimationFrame(() => {
+        setFabTranslate(
+          clampFabTranslate(fabWrapRef.current, p.x as number, p.y as number),
+        );
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     setMessages([]);
@@ -65,6 +119,7 @@ export default function AIAssistantPanel() {
   }, [messages]);
 
   const handleFabMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (fabDragRef.current?.dragging) return;
     if (typeof window !== "undefined" && window.innerWidth < 768) return;
     const el = fabRef.current;
     if (!el) return;
@@ -80,6 +135,66 @@ export default function AIAssistantPanel() {
 
   const openPanel = () => {
     setIsOpen(true);
+  };
+
+  const handleFabPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    fabDragRef.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      origin: { ...fabTranslate },
+      dragging: false,
+    };
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* unsupported */
+    }
+  };
+
+  const handleFabPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const s = fabDragRef.current;
+    if (!s || e.pointerId !== s.pointerId) return;
+
+    const dx = e.clientX - s.startX;
+    const dy = e.clientY - s.startY;
+    if (!s.dragging && dx * dx + dy * dy > DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) {
+      s.dragging = true;
+    }
+    if (!s.dragging) return;
+
+    e.preventDefault();
+    const next = { x: s.origin.x + dx, y: s.origin.y + dy };
+    setFabTranslate(clampFabTranslate(fabWrapRef.current, next.x, next.y));
+  };
+
+  const handleFabPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const s = fabDragRef.current;
+    if (!s || e.pointerId !== s.pointerId) return;
+
+    const wasDrag = s.dragging;
+    fabDragRef.current = null;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      /* already released */
+    }
+
+    if (wasDrag) {
+      setFabTranslate((t) => {
+        const c = clampFabTranslate(fabWrapRef.current, t.x, t.y);
+        try {
+          localStorage.setItem(FAB_OFFSET_STORAGE_KEY, JSON.stringify(c));
+        } catch {
+          /* ignore */
+        }
+        return c;
+      });
+      return;
+    }
+
+    openPanel();
   };
 
   const hint = STEP_HINTS[step]?.[lang] || STEP_HINTS[step]?.en || "";
@@ -173,19 +288,37 @@ export default function AIAssistantPanel() {
   };
 
   if (!isOpen) {
+    const fabTitle =
+      lang === "nl"
+        ? "Sleep om te verplaatsen. Tik of klik om te openen."
+        : "Drag to move. Tap or click to open.";
+
     return (
       <div
-        className="pointer-events-auto fixed bottom-[-3rem] right-[-4rem] z-50"
+        ref={fabWrapRef}
+        className="pointer-events-auto fixed z-50 max-md:[bottom:max(1rem,env(safe-area-inset-bottom,0px))] max-md:[right:max(1rem,env(safe-area-inset-right,0px))] md:bottom-[-3rem] md:right-[-4rem]"
+        style={{
+          transform: `translate3d(${fabTranslate.x}px, ${fabTranslate.y}px, 0)`,
+          touchAction: "none",
+        }}
         onMouseLeave={handleFabLeave}
       >
         <div className="relative">
           <button
             ref={fabRef}
             type="button"
-            onClick={openPanel}
+            onPointerDown={handleFabPointerDown}
+            onPointerMove={handleFabPointerMove}
+            onPointerUp={handleFabPointerUp}
+            onPointerCancel={handleFabPointerUp}
+            onClick={(e) => {
+              /* Mouse/touch open via pointerup; keyboard synthesizes click with detail === 0 */
+              if (e.detail === 0) openPanel();
+            }}
             onMouseMove={handleFabMove}
-            className="group relative touch-manipulation border-0 bg-transparent p-0 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
-            style={{ perspective: 520 }}
+            className="group relative cursor-grab touch-none border-0 bg-transparent p-0 shadow-none outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
+            style={{ perspective: 520, touchAction: "none" }}
+            title={fabTitle}
             aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
           >
             {/* Below md: compact icon so wizard fields stay reachable */}
