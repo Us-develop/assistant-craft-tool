@@ -4,12 +4,18 @@
  * Usage:
  *   npm run db:generate   # produces SQL files from the schema
  *   npm run db:migrate    # applies them to the configured DB
+ *
+ * Loads `.env` then `.env.local` (override) so credentials match `next dev`
+ * (plain `dotenv/config` only reads `.env` by default).
  */
-import "dotenv/config";
-import mysql from "mysql2/promise";
+import dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/mysql2";
 import { migrate } from "drizzle-orm/mysql2/migrator";
+import mysql from "mysql2/promise";
 import path from "node:path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local"), override: true });
 
 async function main(): Promise<void> {
   const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;

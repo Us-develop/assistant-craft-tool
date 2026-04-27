@@ -42,9 +42,19 @@ export function middleware(request: NextRequest): NextResponse {
   return NextResponse.next();
 }
 
+/**
+ * Decode RFC 7617 Basic credentials (UTF-8 user:pass, then base64).
+ * `atob` alone is wrong for non-ASCII: it yields a byte-per-code-unit string
+ * that won't match env vars. Use TextDecoder like `Buffer(..., "utf8")` in Node.
+ */
 function decodeBasic(value: string): [string, string] | [null, null] {
   try {
-    const decoded = atob(value);
+    const binaryString = atob(value.trim());
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const decoded = new TextDecoder("utf-8").decode(bytes);
     const colon = decoded.indexOf(":");
     if (colon === -1) return [null, null];
     return [decoded.slice(0, colon), decoded.slice(colon + 1)];

@@ -37,7 +37,7 @@ export function requireAdminAuth(request: Request): Response | null {
 
 function decodeBasic(value: string): [string, string] | [null, null] {
   try {
-    const decoded = Buffer.from(value, "base64").toString("utf8");
+    const decoded = Buffer.from(value.trim(), "base64").toString("utf8");
     const colon = decoded.indexOf(":");
     if (colon === -1) return [null, null];
     return [decoded.slice(0, colon), decoded.slice(colon + 1)];

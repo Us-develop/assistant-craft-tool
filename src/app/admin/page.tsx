@@ -6,6 +6,52 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
 
+function collectErrorChain(err: unknown): string {
+  const parts: string[] = [];
+  let e: unknown = err;
+  let depth = 0;
+  while (e instanceof Error && depth < 6) {
+    parts.push(e.message);
+    e = e.cause;
+    depth++;
+  }
+  if (parts.length === 0) return String(err);
+  return parts.join(" → ");
+}
+
+function dbTroubleshootingHints(message: string): string[] {
+  const m = message.toLowerCase();
+  const hints: string[] = [];
+  if (
+    m.includes("er_no_such_table") ||
+    m.includes("doesn't exist") ||
+    m.includes("does not exist")
+  ) {
+    hints.push(
+      "The `submissions` table (or another required table) is missing. From the project root, with MySQL running: npm run db:migrate",
+    );
+  }
+  if (m.includes("econnrefused") || m.includes("connect econnrefused")) {
+    hints.push(
+      "Cannot reach MySQL — start your database (see README Docker example) and confirm DB_HOST and DB_PORT in .env.local.",
+    );
+  }
+  if (m.includes("er_access_denied") || m.includes("access denied")) {
+    hints.push("MySQL rejected the login — check DB_USER and DB_PASSWORD in .env.local.");
+  }
+  if (m.includes("er_bad_db_error") || m.includes("unknown database")) {
+    hints.push(
+      "Database name not found — create it (e.g. CREATE DATABASE assistant_craft) or fix DB_NAME in .env.local.",
+    );
+  }
+  if (hints.length === 0) {
+    hints.push(
+      "Confirm DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME in .env.local match your MySQL instance, then run npm run db:migrate if tables were never created.",
+    );
+  }
+  return hints;
+}
+
 /**
  * Admin dashboard listing the most recent submissions. Auth is handled
  * centrally by `src/middleware.ts` (HTTP Basic). This page only runs after
@@ -20,25 +66,38 @@ export default async function AdminPage({
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const offset = (page - 1) * PAGE_SIZE;
 
-  const [totalRow] = await db
-    .select({ total: sql<number>`count(*)` })
-    .from(schema.submissions);
-  const total = Number(totalRow?.total ?? 0);
+  let total = 0;
+  let rows: Awaited<ReturnType<typeof fetchSubmissions>>;
+  try {
+    const [totalRow] = await db
+      .select({ total: sql<number>`count(*)` })
+      .from(schema.submissions);
+    total = Number(totalRow?.total ?? 0);
 
-  const rows = await db
-    .select({
-      id: schema.submissions.id,
-      createdAt: schema.submissions.createdAt,
-      language: schema.submissions.language,
-      assistantName: schema.submissions.assistantName,
-      domain: schema.submissions.domain,
-      jobTitle: schema.submissions.jobTitle,
-      charCount: schema.submissions.charCount,
-    })
-    .from(schema.submissions)
-    .orderBy(desc(schema.submissions.createdAt))
-    .limit(PAGE_SIZE)
-    .offset(offset);
+    rows = await fetchSubmissions(offset);
+  } catch (err) {
+    const detail = collectErrorChain(err);
+    const hints = dbTroubleshootingHints(detail);
+    return (
+      <main className="wizard-shell space-y-6 py-6 sm:py-8">
+        <h1 className="text-2xl font-semibold">Submissions</h1>
+        <div className="dont-box space-y-3">
+          <p className="font-medium text-(--color-foreground)">Could not load data from MySQL</p>
+          <p className="text-sm text-(--color-muted-foreground)">
+            The admin dashboard needs a working database connection and the Drizzle migrations applied.
+          </p>
+          <pre className="max-h-48 overflow-auto rounded-(--radius-m) bg-(--color-card) p-3 font-mono text-xs whitespace-pre-wrap text-(--color-foreground)">
+            {detail}
+          </pre>
+          <ul className="list-inside list-disc space-y-1 text-sm text-(--color-foreground)">
+            {hints.map((h) => (
+              <li key={h}>{h}</li>
+            ))}
+          </ul>
+        </div>
+      </main>
+    );
+  }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -75,6 +134,7 @@ export default async function AdminPage({
               <th className="px-4 py-3">Assistant</th>
               <th className="px-4 py-3">Domain</th>
               <th className="px-4 py-3">Job title</th>
+              <th className="px-4 py-3">Prompt</th>
               <th className="px-4 py-3 text-right">Chars</th>
             </tr>
           </thead>
@@ -82,7 +142,7 @@ export default async function AdminPage({
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   className="px-4 py-12 text-center text-(--color-muted-foreground)"
                 >
                   No submissions yet.
@@ -98,6 +158,38 @@ export default async function AdminPage({
                   <td className="px-4 py-3">{r.domain ?? "—"}</td>
                   <td className="px-4 py-3 text-(--color-muted-foreground)">
                     {r.jobTitle ? truncate(r.jobTitle, 60) : "—"}
+                  </td>
+                  <td className="max-w-[14rem] px-4 py-3 align-top min-[900px]:max-w-xs">
+                    <details className="rounded-(--radius-m) border border-transparent open:border-(--color-border) open:bg-(--color-neutral-20) [&_summary::-webkit-details-marker]:hidden">
+                      <summary className="cursor-pointer list-none text-(--color-primary) underline decoration-transparent underline-offset-2 transition-colors hover:decoration-current">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium">
+                          <span className="material-icons-outlined text-sm" aria-hidden>
+                            expand_more
+                          </span>
+                          View prompt
+                        </span>
+                      </summary>
+                      <div className="max-h-[min(24rem,55vh)] space-y-3 overflow-y-auto border-t border-(--color-border) p-3">
+                        <div>
+                          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-(--color-muted-foreground)">
+                            System instruction
+                          </p>
+                          <pre className="break-words font-mono text-xs leading-relaxed whitespace-pre-wrap text-(--color-foreground)">
+                            {r.generatedPrompt}
+                          </pre>
+                        </div>
+                        {r.kickoffMessage?.trim() ? (
+                          <div>
+                            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-(--color-muted-foreground)">
+                              Kick-off message
+                            </p>
+                            <pre className="break-words font-mono text-xs leading-relaxed whitespace-pre-wrap text-(--color-foreground)">
+                              {r.kickoffMessage}
+                            </pre>
+                          </div>
+                        ) : null}
+                      </div>
+                    </details>
                   </td>
                   <td className="px-4 py-3 text-right font-mono">{r.charCount}</td>
                 </tr>
@@ -118,6 +210,25 @@ export default async function AdminPage({
       )}
     </main>
   );
+}
+
+async function fetchSubmissions(offset: number) {
+  return db
+    .select({
+      id: schema.submissions.id,
+      createdAt: schema.submissions.createdAt,
+      language: schema.submissions.language,
+      assistantName: schema.submissions.assistantName,
+      domain: schema.submissions.domain,
+      jobTitle: schema.submissions.jobTitle,
+      charCount: schema.submissions.charCount,
+      generatedPrompt: schema.submissions.generatedPrompt,
+      kickoffMessage: schema.submissions.kickoffMessage,
+    })
+    .from(schema.submissions)
+    .orderBy(desc(schema.submissions.createdAt))
+    .limit(PAGE_SIZE)
+    .offset(offset);
 }
 
 function PageLink({
