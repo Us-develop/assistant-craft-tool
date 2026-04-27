@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 const FALLBACK = "/ai-assistant-robot.png";
 const DEFAULT_LOTTIE_SRC = "/lottie/ai-assistant-robot.lottie";
 
-/** Floating launcher: exact 30rem square per design */
+/** Floating launcher: 30rem square from md and up (mobile uses a compact icon in the panel) */
 const FAB_SIZE_CLASS = "h-[30rem] w-[30rem]";
 
 function usePrefersReducedMotion(): boolean {

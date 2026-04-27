@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useWizard } from "./WizardContext";
-import { X, Send, Loader2 } from "lucide-react";
+import { X, Send, Loader2, Sparkles } from "lucide-react";
 import AssistantRobotLottie from "@/components/AssistantRobotLottie";
 
 interface ChatMessage {
@@ -65,6 +65,7 @@ export default function AIAssistantPanel() {
   }, [messages]);
 
   const handleFabMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
     const el = fabRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -174,7 +175,7 @@ export default function AIAssistantPanel() {
   if (!isOpen) {
     return (
       <div
-        className="pointer-events-auto fixed z-50 [bottom:max(1rem,env(safe-area-inset-bottom,0px))] [right:max(1rem,env(safe-area-inset-right,0px))] sm:bottom-6 sm:right-6"
+        className="pointer-events-auto fixed bottom-[-3rem] right-[-4rem] z-50"
         onMouseLeave={handleFabLeave}
       >
         <div className="relative">
@@ -183,18 +184,23 @@ export default function AIAssistantPanel() {
             type="button"
             onClick={openPanel}
             onMouseMove={handleFabMove}
-            className="group relative cursor-pointer border-0 bg-transparent p-0 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2 touch-manipulation"
+            className="group relative touch-manipulation border-0 bg-transparent p-0 shadow-none outline-none focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
             style={{ perspective: 520 }}
             aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
           >
-            <div
-              className="transition-transform duration-150 ease-out group-active:scale-[0.98]"
+            {/* Below md: compact icon so wizard fields stay reachable */}
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-(--color-primary) text-(--color-primary-foreground) shadow-md md:hidden">
+              <Sparkles className="h-6 w-6 shrink-0" aria-hidden />
+            </span>
+            {/* md+: full Lottie (30rem) */}
+            <span
+              className="hidden transition-transform duration-150 ease-out group-active:scale-[0.98] md:block"
               style={{
                 transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
               }}
             >
               <AssistantRobotLottie variant="fab" className="pointer-events-none" />
-            </div>
+            </span>
           </button>
         </div>
       </div>
