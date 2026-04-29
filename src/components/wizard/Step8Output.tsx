@@ -1,10 +1,17 @@
 "use client";
 
-import { useWizard } from "./WizardContext";
+import { WizardFieldError, wizardInvalidInputClass } from "./WizardFieldNotice";
+import { useWizard, useWizardStepField } from "./WizardContext";
 import { tr } from "@/lib/translations";
 
 export default function Step8Output() {
   const { lang, data, updateData } = useWizard();
+  const nameF = useWizardStepField("assistantName");
+  const varF = useWizardStepField("variants");
+  const descF = useWizardStepField("description");
+  const structF = useWizardStepField("outputStructure");
+  const lenF = useWizardStepField("lengthLimits");
+  const kickF = useWizardStepField("kickoffMessage");
 
   return (
     <div className="space-y-6">
@@ -18,21 +25,23 @@ export default function Step8Output() {
           <label className="mb-2 block text-sm font-medium">{tr("step8.name", lang)}</label>
           <input
             type="text"
-            className="input-field"
+            className={wizardInvalidInputClass(nameF.invalid)}
             placeholder={tr("step8.namePlaceholder", lang)}
             value={data.assistantName}
             onChange={(e) => updateData({ assistantName: e.target.value })}
           />
+          <WizardFieldError message={nameF.message} />
         </div>
         <div>
           <label className="mb-2 block text-sm font-medium">{tr("step8.variants", lang)}</label>
           <input
             type="text"
-            className="input-field"
+            className={wizardInvalidInputClass(varF.invalid)}
             placeholder={tr("step8.variantsPlaceholder", lang)}
             value={data.variants}
             onChange={(e) => updateData({ variants: e.target.value })}
           />
+          <WizardFieldError message={varF.message} />
         </div>
       </div>
 
@@ -40,11 +49,12 @@ export default function Step8Output() {
         <label className="mb-2 block text-sm font-medium">{tr("step8.description", lang)}</label>
         <input
           type="text"
-          className="input-field"
+          className={wizardInvalidInputClass(descF.invalid)}
           placeholder={tr("step8.descriptionPlaceholder", lang)}
           value={data.description}
           onChange={(e) => updateData({ description: e.target.value })}
         />
+        <WizardFieldError message={descF.message} />
       </div>
 
       <div>
@@ -53,11 +63,12 @@ export default function Step8Output() {
         </label>
         <input
           type="text"
-          className="input-field"
+          className={wizardInvalidInputClass(structF.invalid)}
           placeholder={tr("step8.outputStructurePlaceholder", lang)}
           value={data.outputStructure}
           onChange={(e) => updateData({ outputStructure: e.target.value })}
         />
+        <WizardFieldError message={structF.message} />
       </div>
 
       <div>
@@ -66,11 +77,12 @@ export default function Step8Output() {
         </label>
         <input
           type="text"
-          className="input-field"
+          className={wizardInvalidInputClass(lenF.invalid)}
           placeholder={tr("step8.lengthLimitsPlaceholder", lang)}
           value={data.lengthLimits}
           onChange={(e) => updateData({ lengthLimits: e.target.value })}
         />
+        <WizardFieldError message={lenF.message} />
       </div>
 
       <div>
@@ -81,11 +93,12 @@ export default function Step8Output() {
           </span>
         </label>
         <textarea
-          className="input-field min-h-[120px] resize-y"
+          className={`${wizardInvalidInputClass(kickF.invalid)} min-h-[120px] resize-y`}
           placeholder={tr("step8.kickoffPlaceholder", lang)}
           value={data.kickoffMessage}
           onChange={(e) => updateData({ kickoffMessage: e.target.value })}
         />
+        <WizardFieldError message={kickF.message} />
       </div>
 
       <div className="info-box">

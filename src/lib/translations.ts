@@ -22,7 +22,102 @@ const t: TranslationMap = {
     en: "Fill in every required field on this step before continuing.",
   },
 
-  "save.success": { nl: "Je inzending is opgeslagen.", en: "Your entry has been saved." },
+  "validation.field.domain": {
+    nl: "Kies een domein of beschrijf een eigen specialisatie — zo blijft je assistent op het juiste onderwerp gericht.",
+    en: "Pick a domain preset or enter a custom niche — it keeps your assistant focused on the right work.",
+  },
+  "validation.field.jobTitle": {
+    nl: "Vul functietitel en senioriteit in. Dit helpt het eindresultaat merkbaar verbeteren.",
+    en: "Please fill in the Job title + seniority level. This will improve your end result.",
+  },
+  "validation.field.mentalLens": {
+    nl: "Selecteer minimaal één mentale lens of voeg je eigen formulering toe — zo sluit het antwoord aan op hoe je denkt.",
+    en: "Select at least one mindset—or add your own—so replies match how you think.",
+  },
+  "validation.field.successDefinition": {
+    nl: "Beschrijf wat ‘succes’ is voor deze assistent; dat helpt prioriteiten scherper te zetten.",
+    en: "Describe what \"success\" means for this assistant — it clarifies prioritization.",
+  },
+  "validation.field.coreConviction": {
+    nl: "Kies of formuleer je kernbelief — daar haal je smaak en afweging uit.",
+    en: "Choose or write a core conviction — it anchors taste and tradeoffs.",
+  },
+  "validation.field.qualityAnchor": {
+    nl: "Noem een concreet kwaliteitsanker (bv. clariteit, echtheid).",
+    en: "Add a concrete quality anchor (e.g. clarity, truthfulness).",
+  },
+  "validation.field.toneProfile": {
+    nl: "Kies minimaal één toon of vul een eigen toon in.",
+    en: "Pick at least one tone profile—or add a custom tone.",
+  },
+  "validation.field.doExamples": {
+    nl: "Geef korte voorbeelden van wat de assistent wél mag doen — dat verscherpt de stijl.",
+    en: "Add short \"do\" examples — they sharpen the voice.",
+  },
+  "validation.field.dontExamples": {
+    nl: "Geef korte voorbeelden van wat de assistent vermijdt — zo voorkom je foutieve toon-inslag.",
+    en: "Add short \"don't\" examples — they prevent off-brand moves.",
+  },
+  "validation.field.targetAudience": {
+    nl: "Beschrijf je doelgroep concreet (context, taal, drempels).",
+    en: "Describe your audience in concrete terms (context, language, barriers).",
+  },
+  "validation.field.channels": {
+    nl: "Selecteer minimaal één kanaal waar deze assistent ingezet wordt.",
+    en: "Select at least one channel where this assistant will be used.",
+  },
+  "validation.field.brandPromise": {
+    nl: "Vul de merkbelofte of positionering in — dat houdt output consistent.",
+    en: "Fill in the brand promise so outputs stay consistent.",
+  },
+  "validation.field.checklist": {
+    nl: "Voeg minimaal één kwaliteitscriterium toe aan je checklist.",
+    en: "Add at least one quality criterion to your checklist.",
+  },
+  "validation.field.briefingMistakes": {
+    nl: "Noem typische briefingfouten zodat de assistent die kan opvangen.",
+    en: "List common briefing mistakes so the assistant can catch them.",
+  },
+  "validation.field.alwaysDo": {
+    nl: "Beschrijf wat de assistent altijd moet doen.",
+    en: "Describe what the assistant must always do.",
+  },
+  "validation.field.neverDo": {
+    nl: "Beschrijf wat de assistent nooit mag doen.",
+    en: "Describe what the assistant must never do.",
+  },
+  "validation.field.outOfScope": {
+    nl: "Leg uit wat buiten scope valt — dat voorkomt verkeerde taken.",
+    en: "Explain what is out of scope — it prevents the wrong work.",
+  },
+  "validation.field.missingInfoProtocol": {
+    nl: "Beschrijf hoe om te gaan met ontbrekende informatie.",
+    en: "Describe how to handle missing information.",
+  },
+  "validation.field.assistantName": {
+    nl: "Geef je assistent een duidelijke naam.",
+    en: "Give your assistant a clear name.",
+  },
+  "validation.field.description": {
+    nl: "Vul een korte beschrijving van de assistent (rol in één zin).",
+    en: "Add a one-line description of what this assistant does.",
+  },
+  "validation.field.outputStructure": {
+    nl: "Leg de gewenste structuur van de output uit (koppen, stappen…).",
+    en: "Describe the expected output structure (sections, bullets…).",
+  },
+  "validation.field.lengthLimits": {
+    nl: "Stel lengtegrenzen vast (woord/karakter/Turns) waar relevant.",
+    en: "Define length limits (words/chars/chunks) where it matters.",
+  },
+  "validation.field.variants": {
+    nl: "Benoem welke varianten je wilt (bv. A/B, hooks, talen).",
+    en: "Note which variants you want (e.g. A/B, hooks, languages).",
+  },
+  "validation.field.kickoffMessage": {
+    nl: "Schrijf het kick-offbericht voor de gebruiker — eerste indruk én onboarding.",
+    en: "Write the kick-off prompt users send first—it sets onboarding and clarity.",
+  },
   "save.failed": { nl: "Kon niet opslaan — probeer opnieuw.", en: "Could not save — please try again." },
   "save.notSubmittable": {
     nl: "Vul minimaal een domein, functietitel of assistent-naam in.",
@@ -312,8 +407,8 @@ const t: TranslationMap = {
   "output.nothingToExport": { nl: "Geen kick-off tekst om te delen.", en: "No kick-off text to export." },
 
   "output.agentSetup.title": {
-    nl: "Gebruik in populaire AI-tools",
-    en: "Use in popular AI tools",
+    nl: "Hoe installeer je deze instructies in je agent",
+    en: "How to install these instructions in your agent",
   },
   "output.agentSetup.intro": {
     nl: "Open het tabblad Systeeminstructie hierboven, kopieer de volledige tekst en plak die waar deze tool vaste instructies of een systeemprompt toestaat. Gebruik het tabblad Kick-off bericht waar je eerste bericht apart kunt plakken, of als eerste bericht in een nieuwe chat.",

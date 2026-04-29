@@ -396,6 +396,24 @@
     border-color: var(--color-destructive);
   }
 
+  /* Wizard validation (inline step errors) — brand red */
+  .wizard-field-invalid {
+    border-color: #ff2752 !important;
+    box-shadow: 0 0 0 3px rgb(255 39 82 / 0.22);
+  }
+
+  .wizard-field-invalid:focus {
+    border-color: #ff2752 !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(255 39 82 / 0.38);
+  }
+
+  .wizard-field-invalid-group {
+    outline: 2px solid #ff2752;
+    outline-offset: 4px;
+    border-radius: var(--radius-m);
+  }
+
   /* ——— Selection cards (Step 1 domain tiles, etc.) ——— */
 
   .selection-card {
@@ -429,6 +447,12 @@
   .selection-card.active {
     border-color: var(--color-foreground);
     background: var(--color-hint-green);
+  }
+
+  /** Step 1 wizard: incomplete domain choice — highlight presets only (#ff2752 matches wizard validation UX) */
+  .selection-card.selection-card-validation-invalid {
+    outline: 2px solid #ff2752;
+    outline-offset: 3px;
   }
 }
 

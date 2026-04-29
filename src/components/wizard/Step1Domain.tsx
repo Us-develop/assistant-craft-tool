@@ -1,7 +1,9 @@
 "use client";
 
+import clsx from "clsx";
 import ContextDocumentUpload from "./ContextDocumentUpload";
-import { useWizard } from "./WizardContext";
+import { WizardFieldError } from "./WizardFieldNotice";
+import { useWizard, useWizardStepField } from "./WizardContext";
 import { tr } from "@/lib/translations";
 
 const DOMAINS = ["email", "social", "paid", "content", "brand", "conversion"] as const;
@@ -17,6 +19,7 @@ const DOMAIN_ICONS: Record<(typeof DOMAINS)[number], string> = {
 
 export default function Step1Domain() {
   const { lang, data, updateData } = useWizard();
+  const domainF = useWizardStepField("domain");
 
   return (
     <div className="space-y-6">
@@ -31,35 +34,43 @@ export default function Step1Domain() {
         onChange={(contextDocuments) => updateData({ contextDocuments })}
       />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-        {DOMAINS.map((d) => (
-          <button
-            key={d}
-            type="button"
-            onClick={() => updateData({ domain: d, customDomain: "" })}
-            className={`selection-card flex flex-col items-center gap-3 text-center ${
-              data.domain === d ? "active" : ""
-            }`}
-          >
-            <span className="material-icons-outlined text-3xl text-(--color-primary)">
-              {DOMAIN_ICONS[d]}
-            </span>
-            <span className="text-sm font-medium">{tr(`step1.domains.${d}`, lang)}</span>
-          </button>
-        ))}
-      </div>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          {DOMAINS.map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => updateData({ domain: d, customDomain: "" })}
+              className={clsx(
+                "selection-card flex flex-col items-center gap-3 text-center",
+                data.domain === d && "active",
+                domainF.invalid && "selection-card-validation-invalid",
+              )}
+            >
+              <span className="material-icons-outlined text-3xl text-(--color-primary)">
+                {DOMAIN_ICONS[d]}
+              </span>
+              <span className="text-sm font-medium">{tr(`step1.domains.${d}`, lang)}</span>
+            </button>
+          ))}
+        </div>
 
-      <div>
-        <label className="mb-2 block text-sm font-medium text-(--color-muted-foreground)">
-          {tr("step1.customLabel", lang)}
-        </label>
-        <input
-          type="text"
-          className="input-field"
-          placeholder={tr("step1.customPlaceholder", lang)}
-          value={data.customDomain}
-          onChange={(e) => updateData({ customDomain: e.target.value, domain: "" })}
-        />
+        <div>
+          <label className="mb-2 block text-sm font-medium text-(--color-muted-foreground)">
+            {tr("step1.customLabel", lang)}
+          </label>
+          <input
+            type="text"
+            className={clsx(
+              "input-field",
+              domainF.invalid && "wizard-field-invalid",
+            )}
+            placeholder={tr("step1.customPlaceholder", lang)}
+            value={data.customDomain}
+            onChange={(e) => updateData({ customDomain: e.target.value, domain: "" })}
+          />
+        </div>
+        <WizardFieldError message={domainF.message} />
       </div>
 
       <div className="info-box">

@@ -94,52 +94,61 @@ function nonEmpty(text: string): boolean {
 }
 
 /**
- * Required fields for the active step before advancing (Next / Generate).
+ * Which field groups are still incomplete for a step (for inline validation UI).
  * Context document uploads on step 1 stay optional.
  */
-export function isStepComplete(step: number, data: WizardData): boolean {
+export function getInvalidFieldIdsForStep(step: number, data: WizardData): string[] {
+  const ids: string[] = [];
   switch (step) {
     case 1:
-      return nonEmpty(data.domain) || nonEmpty(data.customDomain);
+      if (!nonEmpty(data.domain) && !nonEmpty(data.customDomain)) ids.push("domain");
+      break;
     case 2:
-      return (
-        nonEmpty(data.jobTitle) &&
-        (data.mentalLens.length > 0 || nonEmpty(data.customMentalLens)) &&
-        nonEmpty(data.successDefinition)
-      );
+      if (!nonEmpty(data.jobTitle)) ids.push("jobTitle");
+      if (data.mentalLens.length === 0 && !nonEmpty(data.customMentalLens)) ids.push("mentalLens");
+      if (!nonEmpty(data.successDefinition)) ids.push("successDefinition");
+      break;
     case 3:
-      return nonEmpty(data.coreConviction) && nonEmpty(data.qualityAnchor);
+      if (!nonEmpty(data.coreConviction)) ids.push("coreConviction");
+      if (!nonEmpty(data.qualityAnchor)) ids.push("qualityAnchor");
+      break;
     case 4:
-      return (
-        (data.toneProfile.length > 0 || nonEmpty(data.customTone)) &&
-        nonEmpty(data.doExamples) &&
-        nonEmpty(data.dontExamples)
-      );
+      if (data.toneProfile.length === 0 && !nonEmpty(data.customTone)) ids.push("toneProfile");
+      if (!nonEmpty(data.doExamples)) ids.push("doExamples");
+      if (!nonEmpty(data.dontExamples)) ids.push("dontExamples");
+      break;
     case 5:
-      return (
-        nonEmpty(data.targetAudience) &&
-        data.channels.length > 0 &&
-        nonEmpty(data.brandPromise)
-      );
+      if (!nonEmpty(data.targetAudience)) ids.push("targetAudience");
+      if (data.channels.length === 0) ids.push("channels");
+      if (!nonEmpty(data.brandPromise)) ids.push("brandPromise");
+      break;
     case 6:
-      return data.checklist.length > 0 && nonEmpty(data.briefingMistakes);
+      if (data.checklist.length === 0) ids.push("checklist");
+      if (!nonEmpty(data.briefingMistakes)) ids.push("briefingMistakes");
+      break;
     case 7:
-      return (
-        nonEmpty(data.alwaysDo) &&
-        nonEmpty(data.neverDo) &&
-        nonEmpty(data.outOfScope) &&
-        nonEmpty(data.missingInfoProtocol)
-      );
+      if (!nonEmpty(data.alwaysDo)) ids.push("alwaysDo");
+      if (!nonEmpty(data.neverDo)) ids.push("neverDo");
+      if (!nonEmpty(data.outOfScope)) ids.push("outOfScope");
+      if (!nonEmpty(data.missingInfoProtocol)) ids.push("missingInfoProtocol");
+      break;
     case 8:
-      return (
-        nonEmpty(data.assistantName) &&
-        nonEmpty(data.description) &&
-        nonEmpty(data.outputStructure) &&
-        nonEmpty(data.lengthLimits) &&
-        nonEmpty(data.variants) &&
-        nonEmpty(data.kickoffMessage)
-      );
+      if (!nonEmpty(data.assistantName)) ids.push("assistantName");
+      if (!nonEmpty(data.description)) ids.push("description");
+      if (!nonEmpty(data.outputStructure)) ids.push("outputStructure");
+      if (!nonEmpty(data.lengthLimits)) ids.push("lengthLimits");
+      if (!nonEmpty(data.variants)) ids.push("variants");
+      if (!nonEmpty(data.kickoffMessage)) ids.push("kickoffMessage");
+      break;
     default:
-      return false;
+      break;
   }
+  return ids;
+}
+
+/**
+ * Required fields for the active step before advancing (Next / Generate).
+ */
+export function isStepComplete(step: number, data: WizardData): boolean {
+  return getInvalidFieldIdsForStep(step, data).length === 0;
 }

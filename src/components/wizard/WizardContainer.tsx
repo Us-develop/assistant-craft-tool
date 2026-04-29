@@ -2,8 +2,7 @@
 
 import { useCallback } from "react";
 import { tr } from "@/lib/translations";
-import { isStepComplete } from "@/lib/wizardSchema";
-import { useToast } from "@/components/ui/Toast";
+import { getInvalidFieldIdsForStep } from "@/lib/wizardSchema";
 import { useWizard } from "./WizardContext";
 import Header from "./Header";
 import ProgressBar from "./ProgressBar";
@@ -32,12 +31,23 @@ const STEP_COMPONENTS: Record<number, React.FC> = {
 };
 
 export default function WizardContainer() {
-  const { lang, step, setStep, showOutput, setShowOutput, data } = useWizard();
-  const { toast } = useToast();
+  const {
+    lang,
+    step,
+    setStep,
+    showOutput,
+    setShowOutput,
+    data,
+    setStepFieldErrors,
+  } = useWizard();
 
   const goNext = useCallback(() => {
-    if (!isStepComplete(step, data)) {
-      toast(tr("validation.stepIncomplete", lang), "error");
+    const ids = getInvalidFieldIdsForStep(step, data);
+    if (ids.length > 0) {
+      setStepFieldErrors({ step, fieldIds: ids });
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
       return;
     }
     if (step < TOTAL_STEPS) {
@@ -48,7 +58,7 @@ export default function WizardContainer() {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [step, data, toast, lang, setStep, setShowOutput]);
+  }, [step, data, setStep, setShowOutput, setStepFieldErrors]);
 
   const goBack = useCallback(() => {
     if (step > 1) {
