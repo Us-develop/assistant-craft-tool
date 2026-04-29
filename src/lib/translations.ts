@@ -306,6 +306,68 @@ const t: TranslationMap = {
   "output.linkFailed": { nl: "Link maken mislukt. Controleer of de database klaar is.", en: "Could not create link. Check the database is set up." },
   "output.nothingToExport": { nl: "Geen kick-off tekst om te delen.", en: "No kick-off text to export." },
 
+  "output.agentSetup.title": {
+    nl: "Gebruik in populaire AI-tools",
+    en: "Use in popular AI tools",
+  },
+  "output.agentSetup.intro": {
+    nl: "Open het tabblad Systeeminstructie hierboven, kopieer de volledige tekst en plak die waar deze tool vaste instructies of een systeemprompt toestaat. Gebruik het tabblad Kick-off bericht waar je eerste bericht apart kunt plakken, of als eerste bericht in een nieuwe chat.",
+    en: "Use the System instruction tab above: copy everything and paste it wherever that app lets you set persistent instructions or a system prompt. Use Kick-off message where a separate first-message field exists, or send it as the first message when you open a new chat.",
+  },
+  "output.agentSetup.chatgptTitle": { nl: "ChatGPT", en: "ChatGPT" },
+  "output.agentSetup.chatgptSteps": {
+    nl:
+      "Open ChatGPT → instellingen (je profiel) → Personalization / Aanpassing en plak daar je instructie onder Custom instructions (indien beschikbaar op je account).\n" +
+      "Wil je alleen deze assistent? Maak onder Ontdek GPT's een eigen GPT aan en vul het veld Instructies met dezelfde systeemtekst.\n" +
+      "Start een nieuwe chat en plak eventueel je kick-off als eerste bericht.",
+    en:
+      "Open ChatGPT → Settings (profile menu) → Personalization and paste your instruction into Custom instructions (when available on your plan).\n" +
+      "For a standalone assistant profile, choose Explore GPTs → Create, and paste into the Instructions field.\n" +
+      "Start a new chat and, if helpful, paste your kick-off message as the first message.",
+  },
+  "output.agentSetup.claudeTitle": { nl: "Claude", en: "Claude" },
+  "output.agentSetup.claudeSteps": {
+    nl:
+      "Open claude.ai (of de Claude-app) en maak een Project aan, of open een bestaand project.\n" +
+      "Voeg je systeemtekst toe in het projectveld voor instructies (bijv. ‘Wat moet Claude weten’) en sla op.\n" +
+      "Chat daarna binnen dat project — plak waar nodig je kick-off als eerste bericht in een nieuwe thread.",
+    en:
+      "Open claude.ai (or the Claude app) and create or open a Project.\n" +
+      "Paste your system instruction into the project Instructions field (sometimes labeled similarly) and save.\n" +
+      "Chat inside that project; optionally send your kick-off as the first message in a fresh thread.",
+  },
+  "output.agentSetup.geminiTitle": { nl: "Google Gemini", en: "Google Gemini" },
+  "output.agentSetup.geminiSteps": {
+    nl:
+      "In de Gemini-app check je onder Instellingen of er persona-/antwoordprofielen zijn; schermteksten verschillen per account en taal.\n" +
+      "Gebruik eventueel Gems: maak een eigen gem en zet daar je kerninstructie in als vaste voorkennis.\n" +
+      "Als alleen chats beschikbaar zijn, begin een gesprek en plak eerst een korte samenvatting van je regels als eerste gebruikersbericht.",
+    en:
+      "In the Gemini web or mobile app, check Settings for personalization or Gems—labels vary by locale and rollout.\n" +
+      "With Gems: create a Gem and put your core instruction inside so reuse is easy.\n" +
+      "If only chat is available, start a conversation and paste a concise version of your rules as the opening user message.",
+  },
+  "output.agentSetup.copilotTitle": { nl: "Microsoft Copilot", en: "Microsoft Copilot" },
+  "output.agentSetup.copilotSteps": {
+    nl:
+      "Copilot voor consumenten (Edge of copilot.microsoft.com) heeft meestal geen permanent systeemveld zoals hierboven: plak daarom jouw aanwijzingen aan het begin van een gesprek of gebruik meegegeven document- of werkruimtecontext.\n" +
+      "Microsoft 365 Copilot: afhankelijk van je organisatie vind je mogelijk werkruimte- of koptekstinstructies waar de IT-beheerder die toestaat.",
+    en:
+      "Consumer Copilot (Edge sidebar or copilot.microsoft.com) often has no global \"system prompt\" field—paste guidance at the start of threads or attach files/context as offered.\n" +
+      "Microsoft 365 Copilot in workplace apps varies by tenant: use approved places for pinned instructions where your admin enables them.",
+  },
+  "output.agentSetup.perplexityTitle": { nl: "Perplexity", en: "Perplexity" },
+  "output.agentSetup.perplexitySteps": {
+    nl:
+      "Ga naar Spaces of naar je Space-instellingen (indien zichtbaar) en beschrijf je rol daar waar een vaste aanwijzing is toegestaan.\n" +
+      "Plak zonodig kernregels in het eerste bericht van een Space-thread of werk met een opgeslagen projectprompt.\n" +
+      "Namen van menu’s veranderen soms — zoek naar woorden zoals Space, instructions of custom in jouw omgeving.",
+    en:
+      "Open Spaces (when available on your Perplexity plan) or your profile/workspace settings.\n" +
+      "Add standing guidance where Perplexity exposes a persistent instruction field; otherwise paste a short rules block as the opening message in each Space chat.\n" +
+      "UI labels change over time — look for Spaces, Threads, or custom instructions.",
+  },
+
   "sharePage.title": { nl: "Gedeelde assistent", en: "Shared assistant" },
   "sharePage.sub": { nl: "Dit is een read-only weergave van de gegenereerde instructie.", en: "This is a read-only view of the generated instruction." },
   "sharePage.back": { nl: "Terug naar de wizard", en: "Back to the wizard" },

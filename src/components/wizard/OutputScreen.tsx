@@ -281,6 +281,38 @@ export default function OutputScreen() {
         </div>
       </div>
 
+      <section
+        className="card-elevated space-y-4 p-4 sm:p-6"
+        aria-labelledby="output-agent-setup-title"
+      >
+        <h2 id="output-agent-setup-title" className="text-lg font-semibold">
+          {tr("output.agentSetup.title", lang)}
+        </h2>
+        <p className="text-sm text-(--color-muted-foreground) leading-relaxed">
+          {tr("output.agentSetup.intro", lang)}
+        </p>
+        <div className="space-y-6 pt-2">
+          {(["chatgpt", "claude", "gemini", "copilot", "perplexity"] as const).map((agentId) => {
+            const steps = tr(`output.agentSetup.${agentId}Steps`, lang)
+              .split("\n")
+              .map((line) => line.trim())
+              .filter(Boolean);
+            return (
+              <div key={agentId}>
+                <h3 className="text-base font-semibold">
+                  {tr(`output.agentSetup.${agentId}Title`, lang)}
+                </h3>
+                <ol className="mt-2 list-decimal space-y-1.5 ps-5 text-sm text-(--color-muted-foreground) leading-relaxed">
+                  {steps.map((step, idx) => (
+                    <li key={idx}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="flex flex-col gap-3 min-[400px]:flex-row min-[400px]:justify-center min-[400px]:gap-4">
         <button
           type="button"
