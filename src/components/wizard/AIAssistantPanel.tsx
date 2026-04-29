@@ -15,7 +15,7 @@ interface ChatMessage {
 const FAB_OFFSET_STORAGE_KEY = "act-assistant-fab-offset";
 const FAB_MINIMIZED_STORAGE_KEY = "act-assistant-fab-minimized";
 
-/** Icon-only FAB controls (minimize / expand) — above the main launcher in z-order. */
+/** Icon-only FAB controls (minimize / expand) — high z-index over the launcher hit target. */
 const fabControlIconBtnClass =
   "pointer-events-auto relative z-[30] flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-(--color-border) bg-(--color-card)/95 shadow-sm backdrop-blur-sm hover:bg-(--color-muted)";
 const DRAG_THRESHOLD_PX = 10;
@@ -349,7 +349,7 @@ export default function AIAssistantPanel() {
               }}
               className={cn(
                 fabControlIconBtnClass,
-                "absolute bottom-8 left-1/2 max-md:hidden -translate-x-1/2",
+                "absolute top-full left-1/2 mt-2 max-md:hidden -translate-x-1/2",
               )}
               aria-label={minimizeLabel}
               title={minimizeLabel}
