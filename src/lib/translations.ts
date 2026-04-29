@@ -17,6 +17,11 @@ const t: TranslationMap = {
   "nav.copied": { nl: "Gekopieerd!", en: "Copied!" },
   "nav.saving": { nl: "Opslaan…", en: "Saving…" },
 
+  "validation.stepIncomplete": {
+    nl: "Vul eerst alle verplichte velden op deze stap in.",
+    en: "Fill in every required field on this step before continuing.",
+  },
+
   "save.success": { nl: "Je inzending is opgeslagen.", en: "Your entry has been saved." },
   "save.failed": { nl: "Kon niet opslaan — probeer opnieuw.", en: "Could not save — please try again." },
   "save.notSubmittable": {

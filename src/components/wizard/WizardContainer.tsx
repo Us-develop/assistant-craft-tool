@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback } from "react";
-import { useWizard } from "./WizardContext";
 import { tr } from "@/lib/translations";
+import { isStepComplete } from "@/lib/wizardSchema";
+import { useToast } from "@/components/ui/Toast";
+import { useWizard } from "./WizardContext";
 import Header from "./Header";
 import ProgressBar from "./ProgressBar";
 import OutputScreen from "./OutputScreen";
@@ -30,9 +32,14 @@ const STEP_COMPONENTS: Record<number, React.FC> = {
 };
 
 export default function WizardContainer() {
-  const { lang, step, setStep, showOutput, setShowOutput } = useWizard();
+  const { lang, step, setStep, showOutput, setShowOutput, data } = useWizard();
+  const { toast } = useToast();
 
   const goNext = useCallback(() => {
+    if (!isStepComplete(step, data)) {
+      toast(tr("validation.stepIncomplete", lang), "error");
+      return;
+    }
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
     } else {
@@ -41,7 +48,7 @@ export default function WizardContainer() {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [step, setStep, setShowOutput]);
+  }, [step, data, toast, lang, setStep, setShowOutput]);
 
   const goBack = useCallback(() => {
     if (step > 1) {

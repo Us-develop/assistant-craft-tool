@@ -88,3 +88,58 @@ export function isSubmittable(data: WizardData): boolean {
       data.assistantName.trim(),
   );
 }
+
+function nonEmpty(text: string): boolean {
+  return text.trim().length > 0;
+}
+
+/**
+ * Required fields for the active step before advancing (Next / Generate).
+ * Context document uploads on step 1 stay optional.
+ */
+export function isStepComplete(step: number, data: WizardData): boolean {
+  switch (step) {
+    case 1:
+      return nonEmpty(data.domain) || nonEmpty(data.customDomain);
+    case 2:
+      return (
+        nonEmpty(data.jobTitle) &&
+        (data.mentalLens.length > 0 || nonEmpty(data.customMentalLens)) &&
+        nonEmpty(data.successDefinition)
+      );
+    case 3:
+      return nonEmpty(data.coreConviction) && nonEmpty(data.qualityAnchor);
+    case 4:
+      return (
+        (data.toneProfile.length > 0 || nonEmpty(data.customTone)) &&
+        nonEmpty(data.doExamples) &&
+        nonEmpty(data.dontExamples)
+      );
+    case 5:
+      return (
+        nonEmpty(data.targetAudience) &&
+        data.channels.length > 0 &&
+        nonEmpty(data.brandPromise)
+      );
+    case 6:
+      return data.checklist.length > 0 && nonEmpty(data.briefingMistakes);
+    case 7:
+      return (
+        nonEmpty(data.alwaysDo) &&
+        nonEmpty(data.neverDo) &&
+        nonEmpty(data.outOfScope) &&
+        nonEmpty(data.missingInfoProtocol)
+      );
+    case 8:
+      return (
+        nonEmpty(data.assistantName) &&
+        nonEmpty(data.description) &&
+        nonEmpty(data.outputStructure) &&
+        nonEmpty(data.lengthLimits) &&
+        nonEmpty(data.variants) &&
+        nonEmpty(data.kickoffMessage)
+      );
+    default:
+      return false;
+  }
+}
