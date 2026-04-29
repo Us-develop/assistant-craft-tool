@@ -1,14 +1,17 @@
 "use client";
 
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { DotLottieReact, type Layout } from "@lottiefiles/dotlottie-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const FALLBACK = "/ai-assistant-robot.png";
 const DEFAULT_LOTTIE_SRC = "/lottie/ai-assistant-robot.lottie";
 
-/** Floating launcher: 30rem square from md and up (mobile uses a compact icon in the panel) */
-const FAB_SIZE_CLASS = "h-[30rem] w-[30rem]";
+/** Keep the full comp in the canvas and pin the character to the bottom (like object-bottom). */
+const LOTTIE_LAYOUT: Layout = { fit: "contain", align: [0.5, 1] };
+
+/** Floating launcher: square from md and up (mobile uses a compact icon in the panel) */
+const FAB_SIZE_CLASS = "h-[24rem] w-[24rem] min-h-0 min-w-0";
 
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
@@ -36,7 +39,7 @@ export type AssistantRobotLottieProps = {
   className?: string;
 };
 
-const FAB_PX = 480; // 30rem at 16px root, for Next/Image
+const FAB_PX = 384; // 24rem at 16px root, for Next/Image
 
 const dimensions: Record<
   AssistantRobotLottieProps["variant"],
@@ -96,6 +99,7 @@ export default function AssistantRobotLottie({ variant, className = "" }: Assist
         src={src}
         loop
         autoplay
+        layout={LOTTIE_LAYOUT}
         className={dim.canvasClass}
         style={{ maxWidth: "100%", maxHeight: "100%" }}
         renderConfig={{ autoResize: true }}

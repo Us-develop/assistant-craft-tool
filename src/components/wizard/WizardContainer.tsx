@@ -75,57 +75,58 @@ export default function WizardContainer() {
   }
 
   return (
-    <div className="min-h-dvh overflow-x-clip bg-(--color-background) pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]">
-      <Header />
+    <>
+      <div className="min-h-dvh overflow-x-clip bg-(--color-background) pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]">
+        <Header />
 
-      {showOutput ? (
-        <OutputScreen />
-      ) : (
-        <>
-          <ProgressBar />
+        {showOutput ? (
+          <OutputScreen />
+        ) : (
+          <>
+            <ProgressBar />
 
-          <div className="wizard-shell relative pb-6 sm:pb-8">
-            {step === 1 && (
-              <>
-                <div className="blob-1 -top-20 -left-32" aria-hidden />
-                <div className="blob-2 top-40 -right-20" aria-hidden />
-                <div className="blob-3 bottom-0 left-10" aria-hidden />
-              </>
-            )}
+            <div className="wizard-shell relative pb-6 sm:pb-8">
+              {step === 1 && (
+                <>
+                  <div className="blob-1 -top-20 -left-32" aria-hidden />
+                  <div className="blob-2 top-40 -right-20" aria-hidden />
+                  <div className="blob-3 bottom-0 left-10" aria-hidden />
+                </>
+              )}
 
-            <div className="card-elevated relative z-10 p-4 sm:p-6 md:p-8">
-              <StepComponent />
-            </div>
+              <div className="card-elevated relative z-10 p-4 sm:p-6 md:p-8">
+                <StepComponent />
+              </div>
 
-            <div
-              className={`mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center ${
-                step === 1 ? "sm:justify-end" : "sm:justify-between"
-              }`}
-            >
-              {step > 1 && (
+              <div
+                className={`mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center ${
+                  step === 1 ? "sm:justify-end" : "sm:justify-between"
+                }`}
+              >
+                {step > 1 && (
+                  <button
+                    type="button"
+                    onClick={goBack}
+                    className="btn-ghost order-1 w-full sm:order-1 sm:w-auto"
+                  >
+                    <span className="material-icons-outlined text-sm">arrow_back</span>
+                    {tr("nav.back", lang)}
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={goBack}
-                  className="btn-ghost order-1 w-full sm:order-1 sm:w-auto"
+                  onClick={goNext}
+                  className="btn-primary order-2 w-full sm:order-2 sm:w-auto"
                 >
-                  <span className="material-icons-outlined text-sm">arrow_back</span>
-                  {tr("nav.back", lang)}
+                  {step === TOTAL_STEPS ? tr("nav.finish", lang) : tr("nav.next", lang)}
+                  <span className="material-icons-outlined text-sm">arrow_forward</span>
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={goNext}
-                className="btn-primary order-2 w-full sm:order-2 sm:w-auto"
-              >
-                {step === TOTAL_STEPS ? tr("nav.finish", lang) : tr("nav.next", lang)}
-                <span className="material-icons-outlined text-sm">arrow_forward</span>
-              </button>
+              </div>
             </div>
-          </div>
-
-          <AIAssistantPanel />
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+      {!showOutput ? <AIAssistantPanel /> : null}
+    </>
   );
 }

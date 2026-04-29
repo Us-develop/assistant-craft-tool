@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useWizard } from "./WizardContext";
-import { X, Send, Loader2, Sparkles } from "lucide-react";
+import { X, Send, Loader2, Sparkles, Minimize2, Maximize2 } from "lucide-react";
 import AssistantRobotLottie from "@/components/AssistantRobotLottie";
+import { cn } from "@/lib/cn";
 
 interface ChatMessage {
   id: string;
@@ -12,6 +13,11 @@ interface ChatMessage {
 }
 
 const FAB_OFFSET_STORAGE_KEY = "act-assistant-fab-offset";
+const FAB_MINIMIZED_STORAGE_KEY = "act-assistant-fab-minimized";
+
+/** Icon-only FAB controls (minimize / expand) — above the main launcher in z-order. */
+const fabControlIconBtnClass =
+  "pointer-events-auto relative z-[30] flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-(--color-border) bg-(--color-card)/95 shadow-sm backdrop-blur-sm hover:bg-(--color-muted)";
 const DRAG_THRESHOLD_PX = 10;
 const FAB_VIEWPORT_PAD = 12;
 
@@ -85,6 +91,7 @@ export default function AIAssistantPanel() {
   const fabWrapRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [fabTranslate, setFabTranslate] = useState({ x: 0, y: 0 });
+  const [fabMinimized, setFabMinimized] = useState(false);
   const fabDragRef = useRef<{
     pointerId: number;
     startX: number;
@@ -92,6 +99,17 @@ export default function AIAssistantPanel() {
     origin: { x: number; y: number };
     dragging: boolean;
   } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (localStorage.getItem(FAB_MINIMIZED_STORAGE_KEY) === "true") {
+        setFabMinimized(true);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -136,6 +154,15 @@ export default function AIAssistantPanel() {
   const openPanel = () => {
     setIsOpen(true);
   };
+
+  const persistFabMinimized = useCallback((next: boolean) => {
+    setFabMinimized(next);
+    try {
+      localStorage.setItem(FAB_MINIMIZED_STORAGE_KEY, next ? "true" : "false");
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const handleFabPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -292,18 +319,44 @@ export default function AIAssistantPanel() {
       lang === "nl"
         ? "Sleep om te verplaatsen. Tik of klik om te openen."
         : "Drag to move. Tap or click to open.";
+    const minimizeLabel =
+      lang === "nl" ? "Robot verkleinen (minder afleidend)" : "Shrink robot (less distracting)";
+    const expandLabel =
+      lang === "nl" ? "Grote robot tonen" : "Show large robot";
 
     return (
       <div
         ref={fabWrapRef}
-        className="pointer-events-auto fixed z-50 max-md:[bottom:max(1rem,env(safe-area-inset-bottom,0px))] max-md:[right:max(1rem,env(safe-area-inset-right,0px))] md:bottom-[-3rem] md:right-[-4rem]"
+        className="pointer-events-auto fixed z-[60] flex flex-col items-end max-md:[bottom:max(1rem,env(safe-area-inset-bottom,0px))] max-md:[right:max(1rem,env(safe-area-inset-right,0px))] md:bottom-[-3rem] md:right-[-4rem]"
         style={{
           transform: `translate3d(${fabTranslate.x}px, ${fabTranslate.y}px, 0)`,
           touchAction: "none",
         }}
-        onMouseLeave={handleFabLeave}
+        onMouseLeave={fabMinimized ? undefined : handleFabLeave}
       >
-        <div className="relative">
+        <div
+          className={cn(
+            "relative isolate inline-block",
+            fabMinimized && "flex flex-col items-center gap-2 pb-1",
+          )}
+        >
+          {!fabMinimized && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                persistFabMinimized(true);
+              }}
+              className={cn(
+                fabControlIconBtnClass,
+                "absolute bottom-8 left-1/2 max-md:hidden -translate-x-1/2",
+              )}
+              aria-label={minimizeLabel}
+              title={minimizeLabel}
+            >
+              <Minimize2 className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+            </button>
+          )}
           <button
             ref={fabRef}
             type="button"
@@ -315,26 +368,56 @@ export default function AIAssistantPanel() {
               /* Mouse/touch open via pointerup; keyboard synthesizes click with detail === 0 */
               if (e.detail === 0) openPanel();
             }}
-            onMouseMove={handleFabMove}
-            className="group relative cursor-grab touch-none border-0 bg-transparent p-0 shadow-none outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
+            onMouseMove={fabMinimized ? undefined : handleFabMove}
+            className="group relative z-[1] block cursor-grab touch-none border-0 bg-transparent p-0 shadow-none outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-(--color-foreground) focus-visible:ring-offset-2"
             style={{ perspective: 520, touchAction: "none" }}
             title={fabTitle}
             aria-label={lang === "nl" ? "Open AI assistent" : "Open AI assistant"}
           >
-            {/* Below md: compact icon so wizard fields stay reachable */}
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-(--color-primary) text-(--color-primary-foreground) shadow-md md:hidden">
-              <Sparkles className="h-6 w-6 shrink-0" aria-hidden />
-            </span>
-            {/* md+: full Lottie (30rem) */}
-            <span
-              className="hidden transition-transform duration-150 ease-out group-active:scale-[0.98] md:block"
-              style={{
-                transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-              }}
-            >
-              <AssistantRobotLottie variant="fab" className="pointer-events-none" />
-            </span>
+            {fabMinimized ? (
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-md ring-1 ring-white/30 md:h-[3.25rem] md:w-[3.25rem]">
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                  style={{ backgroundImage: "url(/us-holo-button.gif)" }}
+                />
+                <span aria-hidden className="absolute inset-0 bg-black/35" />
+                <Sparkles
+                  className="relative z-10 h-6 w-6 shrink-0 text-white drop-shadow-md md:h-7 md:w-7"
+                  aria-hidden
+                />
+              </span>
+            ) : (
+              <>
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-(--color-primary) text-(--color-primary-foreground) shadow-md md:hidden">
+                  <Sparkles className="h-6 w-6 shrink-0" aria-hidden />
+                </span>
+                <span
+                  className="hidden transition-transform duration-150 ease-out group-active:scale-[0.98] md:block"
+                  style={{
+                    transform: `perspective(520px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                  }}
+                >
+                  <AssistantRobotLottie variant="fab" className="pointer-events-none" />
+                </span>
+              </>
+            )}
           </button>
+          {fabMinimized && (
+            <button
+              type="button"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                persistFabMinimized(false);
+              }}
+              className={cn(fabControlIconBtnClass, "text-(--color-foreground)")}
+              aria-label={expandLabel}
+              title={expandLabel}
+            >
+              <Maximize2 className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+            </button>
+          )}
         </div>
       </div>
     );
@@ -342,7 +425,7 @@ export default function AIAssistantPanel() {
 
   return (
     <div
-      className="fixed z-50 flex w-auto flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl [bottom:max(0.75rem,env(safe-area-inset-bottom,0px))] [left:max(0.75rem,env(safe-area-inset-left,0px))] [right:max(0.75rem,env(safe-area-inset-right,0px))] max-sm:h-[min(32rem,85dvh)] max-sm:max-h-[85dvh] sm:bottom-6 sm:left-auto sm:right-6 sm:h-[32rem] sm:max-h-[min(32rem,90dvh)] sm:w-[min(380px,calc(100vw-1.5rem))] sm:max-w-[min(380px,calc(100vw-1.5rem))]"
+      className="fixed z-[60] flex w-auto flex-col overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-card) shadow-xl [bottom:max(0.75rem,env(safe-area-inset-bottom,0px))] [left:max(0.75rem,env(safe-area-inset-left,0px))] [right:max(0.75rem,env(safe-area-inset-right,0px))] max-sm:h-[min(32rem,85dvh)] max-sm:max-h-[85dvh] sm:bottom-6 sm:left-auto sm:right-6 sm:h-[32rem] sm:max-h-[min(32rem,90dvh)] sm:w-[min(380px,calc(100vw-1.5rem))] sm:max-w-[min(380px,calc(100vw-1.5rem))]"
     >
       <div className="flex shrink-0 items-center justify-between border-b border-(--color-border) bg-(--color-primary) px-4 py-3 text-(--color-primary-foreground)">
         <div className="flex items-center gap-2">
