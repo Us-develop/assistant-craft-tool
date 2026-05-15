@@ -11,7 +11,7 @@ function LoginForm() {
   const error = searchParams.get("error");
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center bg-[#f2f2f2] px-4">
+    <div className="relative flex min-h-dvh items-center justify-center px-4">
       <TiledBackground />
       <div className="relative z-10 w-full max-w-sm rounded-3xl border border-white/40 bg-white/50 p-8 text-center shadow-lg backdrop-blur-xl">
         <h1 className="mb-2 text-2xl">Assistant Builder</h1>

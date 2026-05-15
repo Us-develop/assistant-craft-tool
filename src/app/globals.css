@@ -49,7 +49,7 @@
   --color-system-warning: #eb8916;
 
   /* — Semantic roles (Light mode) — */
-  --color-background: var(--color-neutral-00);
+  --color-background: #f2f2f2;
   --color-foreground: var(--color-shark);
   --color-card: var(--color-neutral-00);
   --color-card-foreground: var(--color-shark);
