@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { desc, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { requireAdminAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,9 +8,6 @@ export const dynamic = "force-dynamic";
 const MAX_LIMIT = 200;
 
 export async function GET(request: NextRequest): Promise<Response> {
-  const authError = requireAdminAuth(request);
-  if (authError) return authError;
-
   const { searchParams } = new URL(request.url);
   const limit = clamp(Number(searchParams.get("limit") ?? 50), 1, MAX_LIMIT);
   const offset = clamp(Number(searchParams.get("offset") ?? 0), 0, Number.MAX_SAFE_INTEGER);

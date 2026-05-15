@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { db, schema } from "@/lib/db";
-import { hashIp } from "@/lib/auth";
+import { hashIp } from "@/lib/hashIp";
 import { requireTenantFromRequest } from "@/lib/tenants/resolve";
 import { submissionPayloadSchema, isSubmittable } from "@/lib/wizardSchema";
 

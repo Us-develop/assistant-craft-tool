@@ -6,6 +6,7 @@ import {
   json,
   timestamp,
   index,
+  unique,
 } from "drizzle-orm/mysql-core";
 import type { WizardData } from "@/lib/wizardSchema";
 
@@ -65,3 +66,27 @@ export const promptShares = mysqlTable("prompt_shares", {
 });
 
 export type PromptShareRow = typeof promptShares.$inferSelect;
+
+/**
+ * `tenant_users` — per-tenant access grants managed by admins.
+ * Each row gives one email address access to one tenant.
+ */
+export const tenantUsers = mysqlTable(
+  "tenant_users",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    email: varchar("email", { length: 255 }).notNull(),
+    tenantSlug: varchar("tenant_slug", { length: 32 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdBy: varchar("created_by", { length: 255 }),
+  },
+  (table) => ({
+    emailTenantUniq: unique("email_tenant_uniq").on(table.email, table.tenantSlug),
+    emailIdx: index("tenant_users_email_idx").on(table.email),
+  }),
+);
+
+export type TenantUser = typeof tenantUsers.$inferSelect;
+export type NewTenantUser = typeof tenantUsers.$inferInsert;

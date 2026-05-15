@@ -1,7 +1,6 @@
 import { type NextRequest } from "next/server";
 import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { requireAdminAuth } from "@/lib/auth";
 import { TENANT_SLUGS } from "@/lib/tenants";
 
 export const runtime = "nodejs";
@@ -21,9 +20,6 @@ const CSV_HEADERS = [
 ] as const;
 
 export async function GET(request: NextRequest): Promise<Response> {
-  const authError = requireAdminAuth(request);
-  if (authError) return authError;
-
   const tenantParam = request.nextUrl.searchParams.get("tenant");
   const tenantFilter =
     tenantParam && TENANT_SLUGS.includes(tenantParam as (typeof TENANT_SLUGS)[number])

@@ -55,8 +55,7 @@ function dbTroubleshootingHints(message: string): string[] {
 
 /**
  * Admin dashboard listing the most recent submissions. Auth is handled
- * centrally by `src/middleware.ts` (HTTP Basic). This page only runs after
- * the user has authenticated.
+ * centrally by `src/middleware.ts` (Google OAuth + admin role check).
  */
 export default async function AdminPage({
   searchParams,
@@ -118,6 +117,9 @@ export default async function AdminPage({
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <a href="/admin/users" className="btn-ghost text-sm">
+            Manage users
+          </a>
           <form method="get" className="flex items-center gap-2">
             <label htmlFor="tenant-filter" className="sr-only">
               Filter by client

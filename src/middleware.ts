@@ -1,91 +1,54 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth.config";
 import { TENANT_SLUGS } from "@/lib/tenants";
 
-export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/api/admin/:path*",
-    "/demo",
-    "/demo/:path*",
-    "/maxi-zoo",
-    "/maxi-zoo/:path*",
-  ],
-};
+const PUBLIC_PATHS = ["/login", "/api/auth"];
 
-export function middleware(request: NextRequest): NextResponse {
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(p + "/"),
+  );
+}
+
+export default auth((request) => {
   const pathname = request.nextUrl.pathname;
 
+  if (isPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  if (!request.auth) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  const { isAdmin, allowedTenants } = request.auth.user ?? {};
+
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-    return adminAuth(request);
+    if (!isAdmin) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+    return NextResponse.next();
   }
 
   const segment = pathname.split("/")[1];
-  if (segment && !TENANT_SLUGS.includes(segment as (typeof TENANT_SLUGS)[number])) {
-    return NextResponse.rewrite(new URL("/404", request.url));
-  }
-
-  return NextResponse.next();
-}
-
-function adminAuth(request: NextRequest): NextResponse {
-  const expectedUser = process.env.ADMIN_USER;
-  const expectedPass = process.env.ADMIN_PASSWORD;
-
-  if (!expectedUser || !expectedPass) {
-    return new NextResponse(
-      "Server misconfigured: ADMIN_USER / ADMIN_PASSWORD not set.",
-      { status: 500 },
-    );
-  }
-
-  const header = request.headers.get("authorization") ?? "";
-  if (!header.toLowerCase().startsWith("basic ")) {
-    return unauthorized();
-  }
-
-  const [user, pass] = decodeBasic(header.slice(6));
-  if (!user || !pass) return unauthorized();
 
   if (
-    !constantTimeEquals(user, expectedUser) ||
-    !constantTimeEquals(pass, expectedPass)
+    segment &&
+    TENANT_SLUGS.includes(segment as (typeof TENANT_SLUGS)[number])
   ) {
-    return unauthorized();
+    if (!isAdmin && !allowedTenants?.includes(segment)) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
-}
+});
 
-function decodeBasic(value: string): [string, string] | [null, null] {
-  try {
-    const binaryString = atob(value.trim());
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    const decoded = new TextDecoder("utf-8").decode(bytes);
-    const colon = decoded.indexOf(":");
-    if (colon === -1) return [null, null];
-    return [decoded.slice(0, colon), decoded.slice(colon + 1)];
-  } catch {
-    return [null, null];
-  }
-}
-
-function constantTimeEquals(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) {
-    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return diff === 0;
-}
-
-function unauthorized(): NextResponse {
-  return new NextResponse("Authentication required.", {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": 'Basic realm="Assistant Craft Tool admin", charset="UTF-8"',
-    },
-  });
-}
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)",
+  ],
+};
