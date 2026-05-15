@@ -6,7 +6,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Assistant Builder",
   description:
-    "White-label Assistant Craft Tool instances for Gobonkers clients.",
+    "White-label Assistant Craft Tool instances for Us clients.",
   icons: {
     icon: "/logo-us.svg",
   },

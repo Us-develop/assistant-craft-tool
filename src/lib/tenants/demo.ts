@@ -4,15 +4,15 @@ export const demoTenant: TenantConfig = {
   slug: "demo",
   name: "Demo",
   description: {
-    nl: "Standaard Assistant Craft Tool — Gobonkers branding.",
-    en: "Default Assistant Craft Tool — Gobonkers branding.",
+    nl: "Standaard Assistant Craft Tool — Us branding.",
+    en: "Default Assistant Craft Tool — Us branding.",
   },
   tagline: {
     nl: "Co-creating digital impact",
     en: "Co-creating digital impact",
   },
   logoSrc: "/tenants/demo/logo.svg",
-  logoAlt: "Gobonkers",
+  logoAlt: "Us",
   colorsPath: "/tenants/demo/colors.json",
   defaultLang: "nl",
   listedOnArchive: true,

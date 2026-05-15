@@ -18,7 +18,7 @@ export default async function ClientArchive() {
       <header className="mb-10 space-y-3">
         <Image
           src="/logo-us.svg"
-          alt="Gobonkers"
+          alt="Us"
           width={83}
           height={40}
           className="h-9 w-auto"

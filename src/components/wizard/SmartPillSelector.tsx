@@ -85,20 +85,27 @@ export default function SmartPillSelector({
     setSuggestions((prev) => prev.filter((s) => s !== suggestion));
   };
 
+  const hasContext = hasWizardContext(data as unknown as Record<string, unknown>);
+  const visibleOptions = hasContext
+    ? options.filter((opt) => selected.includes(opt))
+    : options;
+
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => (
-          <button
-            key={opt}
-            type="button"
-            onClick={() => onToggle(opt)}
-            className={`pill-tag ${selected.includes(opt) ? "active" : ""}`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
+      {visibleOptions.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {visibleOptions.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onToggle(opt)}
+              className={`pill-tag ${selected.includes(opt) ? "active" : ""}`}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
 
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-2">
