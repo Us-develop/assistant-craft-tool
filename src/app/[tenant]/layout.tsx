@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTenant, loadTenantColorScheme } from "@/lib/tenants";
+import { getTenant } from "@/lib/tenants";
+import { loadTenantColorScheme } from "@/lib/tenants/loadTenantColors.server";
 import { tenantThemeStyle } from "@/lib/tenantTheme";
 
 type Props = {

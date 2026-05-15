@@ -25,4 +25,4 @@ export function isTenantSlug(slug: string): slug is TenantSlug {
 
 export type { TenantConfig, TenantSlug } from "./types";
 export type { TenantColorScheme } from "./colors";
-export { loadTenantColorScheme, tenantColorSchemeSchema } from "./colors";
+export { tenantColorSchemeSchema } from "./colors";
