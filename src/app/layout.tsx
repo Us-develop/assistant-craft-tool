@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { auth } from "@/lib/auth";
 import SignOutButton from "@/components/SignOutButton";
 import "./globals.css";
 
@@ -18,9 +19,11 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await auth();
+
   return (
     <html lang="nl">
       <head>
@@ -31,7 +34,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        <SignOutButton />
+        {session && <SignOutButton />}
       </body>
     </html>
   );
