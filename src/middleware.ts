@@ -21,8 +21,9 @@ export default auth((request) => {
   }
 
   if (!request.auth) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.url);
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -42,7 +43,10 @@ export default auth((request) => {
     TENANT_SLUGS.includes(segment as (typeof TENANT_SLUGS)[number])
   ) {
     if (!isAdmin && !allowedTenants?.includes(segment)) {
-      return NextResponse.redirect(new URL("/", request.url));
+      const homeUrl = request.nextUrl.clone();
+      homeUrl.pathname = "/";
+      homeUrl.search = "";
+      return NextResponse.redirect(homeUrl);
     }
     return NextResponse.next();
   }

@@ -1,25 +1,20 @@
-import { redirect } from "next/navigation";
-import { auth, signIn } from "@/lib/auth";
+"use client";
 
-type Props = {
-  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
-};
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function LoginPage({ searchParams }: Props) {
-  const session = await auth();
-  const { callbackUrl, error } = await searchParams;
-
-  if (session) {
-    redirect(callbackUrl ?? "/");
-  }
-
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  const error = searchParams.get("error");
   const accessDenied = error === "AccessDenied";
 
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
       <div className="card-elevated w-full max-w-sm p-8 text-center">
         <h1 className="mb-2 text-2xl">Assistant Builder</h1>
-        <p className="mb-8 text-muted-foreground">
+        <p className="mb-8 text-(--color-muted-foreground)">
           Sign in to continue
         </p>
 
@@ -31,19 +26,24 @@ export default async function LoginPage({ searchParams }: Props) {
           </div>
         )}
 
-        <form
-          action={async () => {
-            "use server";
-            await signIn("google", { redirectTo: callbackUrl ?? "/" });
-          }}
+        <button
+          type="button"
+          onClick={() => signIn("google", { callbackUrl })}
+          className="btn-primary w-full gap-3"
         >
-          <button type="submit" className="btn-primary w-full gap-3">
-            <GoogleIcon />
-            Sign in with Google
-          </button>
-        </form>
+          <GoogleIcon />
+          Sign in with Google
+        </button>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
 

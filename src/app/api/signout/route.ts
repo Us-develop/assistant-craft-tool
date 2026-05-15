@@ -9,9 +9,8 @@ const AUTH_COOKIES = [
   "__Secure-authjs.csrf-token",
 ];
 
-export function POST(request: Request) {
-  const url = new URL("/login", request.url);
-  const response = NextResponse.redirect(url, 302);
+export function POST() {
+  const response = NextResponse.json({ ok: true });
 
   for (const name of AUTH_COOKIES) {
     response.cookies.set(name, "", { path: "/", maxAge: 0 });
