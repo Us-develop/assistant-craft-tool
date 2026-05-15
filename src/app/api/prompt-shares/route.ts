@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { db, schema } from "@/lib/db";
+import { requireTenantFromRequest } from "@/lib/tenants/resolve";
 import { LANGUAGES } from "@/lib/wizardSchema";
 
 const bodySchema = z.object({
@@ -29,6 +30,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const tenantResult = requireTenantFromRequest(request);
+  if (tenantResult instanceof Response) return tenantResult;
+  const tenant = tenantResult;
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -54,6 +59,7 @@ export async function POST(request: NextRequest) {
   try {
     await db.insert(schema.promptShares).values({
       token,
+      tenantSlug: tenant.slug,
       language,
       assistantName: assistantName || null,
       generatedPrompt,
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
   }
 
   const origin = getRequestOrigin(request);
-  const url = `${origin}/share/${token}`;
+  const url = `${origin}/${tenant.slug}/share/${token}`;
 
   return NextResponse.json({ url, token });
 }

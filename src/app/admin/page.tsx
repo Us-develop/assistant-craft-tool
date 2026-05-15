@@ -1,5 +1,6 @@
-import { desc, sql } from "drizzle-orm";
+import { desc, eq, sql, type SQL } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { TENANT_SLUGS, getTenant } from "@/lib/tenants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -60,21 +61,27 @@ function dbTroubleshootingHints(message: string): string[] {
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; tenant?: string }>;
 }) {
   const params = await searchParams;
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const offset = (page - 1) * PAGE_SIZE;
+  const tenantFilter =
+    params.tenant && TENANT_SLUGS.includes(params.tenant as (typeof TENANT_SLUGS)[number])
+      ? params.tenant
+      : undefined;
+  const tenantWhere = tenantFilter
+    ? eq(schema.submissions.tenantSlug, tenantFilter)
+    : undefined;
 
   let total = 0;
   let rows: Awaited<ReturnType<typeof fetchSubmissions>>;
   try {
-    const [totalRow] = await db
-      .select({ total: sql<number>`count(*)` })
-      .from(schema.submissions);
+    const countQuery = db.select({ total: sql<number>`count(*)` }).from(schema.submissions);
+    const [totalRow] = tenantWhere ? await countQuery.where(tenantWhere) : await countQuery;
     total = Number(totalRow?.total ?? 0);
 
-    rows = await fetchSubmissions(offset);
+    rows = await fetchSubmissions(offset, tenantWhere);
   } catch (err) {
     const detail = collectErrorChain(err);
     const hints = dbTroubleshootingHints(detail);
@@ -111,11 +118,36 @@ export default async function AdminPage({
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <form method="get" className="flex items-center gap-2">
+            <label htmlFor="tenant-filter" className="sr-only">
+              Filter by client
+            </label>
+            <select
+              id="tenant-filter"
+              name="tenant"
+              defaultValue={tenantFilter ?? ""}
+              className="rounded-(--radius-m) border border-(--color-border) bg-(--color-card) px-3 py-2 text-sm"
+            >
+              <option value="">All clients</option>
+              {TENANT_SLUGS.map((slug) => (
+                <option key={slug} value={slug}>
+                  {getTenant(slug)?.name ?? slug}
+                </option>
+              ))}
+            </select>
+            <button type="submit" className="btn-primary text-sm">
+              Filter
+            </button>
+          </form>
           <span className="text-sm text-(--color-muted-foreground)">
             {total.toLocaleString()} total
           </span>
           <a
-            href="/api/admin/submissions/export"
+            href={
+              tenantFilter
+                ? `/api/admin/submissions/export?tenant=${tenantFilter}`
+                : "/api/admin/submissions/export"
+            }
             className="btn-primary w-full text-center text-sm sm:w-auto"
             download
           >
@@ -129,6 +161,7 @@ export default async function AdminPage({
           <thead className="bg-(--color-muted) text-left text-xs uppercase text-(--color-muted-foreground)">
             <tr>
               <th className="px-4 py-3">ID</th>
+              <th className="px-4 py-3">Client</th>
               <th className="px-4 py-3">Created</th>
               <th className="px-4 py-3">Lang</th>
               <th className="px-4 py-3">Assistant</th>
@@ -142,7 +175,7 @@ export default async function AdminPage({
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={9}
                   className="px-4 py-12 text-center text-(--color-muted-foreground)"
                 >
                   No submissions yet.
@@ -152,6 +185,7 @@ export default async function AdminPage({
               rows.map((r) => (
                 <tr key={r.id} className="border-t border-(--color-border)">
                   <td className="px-4 py-3 font-mono text-xs">{r.id}</td>
+                  <td className="px-4 py-3 font-mono text-xs">{r.tenantSlug}</td>
                   <td className="px-4 py-3">{formatDate(r.createdAt)}</td>
                   <td className="px-4 py-3 uppercase">{r.language}</td>
                   <td className="px-4 py-3">{r.assistantName ?? "—"}</td>
@@ -201,21 +235,32 @@ export default async function AdminPage({
 
       {totalPages > 1 && (
         <nav className="mt-6 flex items-center justify-between text-sm">
-          <PageLink page={page - 1} disabled={page <= 1} label="← Previous" />
+          <PageLink
+            page={page - 1}
+            disabled={page <= 1}
+            label="← Previous"
+            tenant={tenantFilter}
+          />
           <span className="text-(--color-muted-foreground)">
             Page {page} of {totalPages}
           </span>
-          <PageLink page={page + 1} disabled={page >= totalPages} label="Next →" />
+          <PageLink
+            page={page + 1}
+            disabled={page >= totalPages}
+            label="Next →"
+            tenant={tenantFilter}
+          />
         </nav>
       )}
     </main>
   );
 }
 
-async function fetchSubmissions(offset: number) {
-  return db
+async function fetchSubmissions(offset: number, tenantWhere?: SQL) {
+  const base = db
     .select({
       id: schema.submissions.id,
+      tenantSlug: schema.submissions.tenantSlug,
       createdAt: schema.submissions.createdAt,
       language: schema.submissions.language,
       assistantName: schema.submissions.assistantName,
@@ -225,7 +270,11 @@ async function fetchSubmissions(offset: number) {
       generatedPrompt: schema.submissions.generatedPrompt,
       kickoffMessage: schema.submissions.kickoffMessage,
     })
-    .from(schema.submissions)
+    .from(schema.submissions);
+
+  const filtered = tenantWhere ? base.where(tenantWhere) : base;
+
+  return filtered
     .orderBy(desc(schema.submissions.createdAt))
     .limit(PAGE_SIZE)
     .offset(offset);
@@ -235,16 +284,20 @@ function PageLink({
   page,
   disabled,
   label,
+  tenant,
 }: {
   page: number;
   disabled: boolean;
   label: string;
+  tenant?: string;
 }) {
   if (disabled) {
     return <span className="text-(--color-muted-foreground)">{label}</span>;
   }
+  const qs = new URLSearchParams({ page: String(page) });
+  if (tenant) qs.set("tenant", tenant);
   return (
-    <a href={`/admin?page=${page}`} className="text-(--color-primary) hover:underline">
+    <a href={`/admin?${qs}`} className="text-(--color-primary) hover:underline">
       {label}
     </a>
   );

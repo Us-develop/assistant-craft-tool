@@ -35,6 +35,7 @@ export const submissions = mysqlTable(
     generatedPrompt: text("generated_prompt").notNull(),
     kickoffMessage: text("kickoff_message"),
     charCount: bigint("char_count", { mode: "number", unsigned: true }).notNull(),
+    tenantSlug: varchar("tenant_slug", { length: 32 }).notNull().default("demo"),
     ipHash: varchar("ip_hash", { length: 64 }),
     userAgent: varchar("user_agent", { length: 500 }),
   },
@@ -42,6 +43,7 @@ export const submissions = mysqlTable(
     createdAtIdx: index("submissions_created_at_idx").on(table.createdAt),
     domainIdx: index("submissions_domain_idx").on(table.domain),
     languageIdx: index("submissions_language_idx").on(table.language),
+    tenantSlugIdx: index("submissions_tenant_slug_idx").on(table.tenantSlug),
   }),
 );
 
@@ -55,6 +57,7 @@ export type NewSubmission = typeof submissions.$inferInsert;
 export const promptShares = mysqlTable("prompt_shares", {
   token: varchar("token", { length: 32 }).primaryKey(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  tenantSlug: varchar("tenant_slug", { length: 32 }).notNull().default("demo"),
   language: varchar("language", { length: 8 }).notNull(),
   assistantName: varchar("assistant_name", { length: 160 }),
   generatedPrompt: text("generated_prompt").notNull(),

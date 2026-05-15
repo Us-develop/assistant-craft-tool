@@ -76,7 +76,10 @@ They map 1:1 to the values in `.env.example`:
 | `DB_SSL` | `false` (internal host) or `true` (remote) |
 | `ADMIN_USER` | your admin username |
 | `ADMIN_PASSWORD` | a long random string (`openssl rand -base64 24`) |
-| `NEXT_PUBLIC_APP_URL` | your public URL, e.g. `https://craft.example.com` |
+| `OPENAI_API_KEY__DEMO` | OpenAI key for `/demo` |
+| `OPENAI_API_KEY__MAXI_ZOO` | OpenAI key for `/maxi-zoo` |
+| `OPENAI_API_KEY` | optional fallback if a tenant key is missing |
+| `NEXT_PUBLIC_APP_URL` | your public URL, e.g. `https://assistant-builder.gobonkerswithus.be` |
 
 ## 4. Start command
 
@@ -101,21 +104,20 @@ npx next start -p $PORT
 1. **Domain** — In mijn.combell → Domains → point your domain to the Node.js
    account (Combell exposes a dropdown that routes the hostname to the
    correct sub-account).
-2. **MySQL** — open phpMyAdmin for your database and run the SQL in
-   `src/drizzle/migrations/0000_create_submissions.sql` (copy-paste). This
-   creates the `submissions` table and the three indexes used by the admin
-   list. You can also run `npm run db:migrate` locally against the remote
-   MySQL if port 3306 is reachable from the outside; Combell often blocks
-   external MySQL access by default, so phpMyAdmin is the reliable route.
+2. **MySQL** — open phpMyAdmin and run every SQL file in
+   `src/drizzle/migrations/` in order (`0000_…`, `0001_…`, `0002_tenant_slug.sql`).
+   The latest migration adds `tenant_slug` to `submissions` and `prompt_shares`.
+   You can also run `npm run db:migrate` locally if port 3306 is reachable.
 
 ## 6. Verify
 
-1. Browse to `https://yourdomain.com` — the wizard should load.
-2. Complete the 8 steps and click **Genereer instructie / Generate instruction**.
+1. Browse to `https://yourdomain.com/` — the client archive lists **Demo** and **Maxi Zoo**.
+2. Open `https://yourdomain.com/demo` — complete the wizard and generate an instruction.
    A green toast "Je inzending is opgeslagen." should appear.
-3. Browse to `https://yourdomain.com/admin` — a Basic Auth popup appears.
-   Enter `ADMIN_USER` / `ADMIN_PASSWORD`. You should see the submission you
-   just created. **Export CSV** downloads a CSV dump.
+3. Open `https://yourdomain.com/maxi-zoo` — confirm Maxi Zoo branding loads and AI features work
+   with the Maxi Zoo OpenAI key only.
+4. Browse to `https://yourdomain.com/admin` — Basic Auth, then filter by client and export CSV.
+5. Create a share link on the result screen — URL should be `/{tenant}/share/{token}`.
 
 ## 7. Updating the app
 

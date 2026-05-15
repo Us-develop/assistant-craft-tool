@@ -1,7 +1,8 @@
 import { generateText } from "ai";
 import { z } from "zod";
-import { MODELS } from "@/lib/ai/client";
+import { getModelsForTenant } from "@/lib/ai/client";
 import { parseSuggestionsFromLlm } from "@/lib/ai/parseSuggestionsResponse";
+import { requireTenantFromRequest } from "@/lib/tenants/resolve";
 import { buildSuggestPrompt } from "@/lib/ai/prompts";
 import { wizardSchema, LANGUAGES } from "@/lib/wizardSchema";
 
@@ -13,6 +14,10 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const tenantResult = requireTenantFromRequest(request);
+  if (tenantResult instanceof Response) return tenantResult;
+  const tenant = tenantResult;
+
   try {
     const body = await request.json();
     const parsed = requestSchema.safeParse(body);
@@ -29,8 +34,9 @@ export async function POST(request: Request) {
 
     const prompt = buildSuggestPrompt(category, currentSelections, fullData, lang);
 
+    const models = getModelsForTenant(tenant.slug);
     const { text } = await generateText({
-      model: MODELS.fast,
+      model: models.fast,
       prompt,
       maxOutputTokens: 200,
       temperature: 0.7,

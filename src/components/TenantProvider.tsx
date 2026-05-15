@@ -1,0 +1,22 @@
+"use client";
+
+import { createContext, useContext, type ReactNode } from "react";
+import type { TenantConfig } from "@/lib/tenants/types";
+
+const TenantContext = createContext<TenantConfig | null>(null);
+
+export function TenantProvider({
+  tenant,
+  children,
+}: {
+  tenant: TenantConfig;
+  children: ReactNode;
+}) {
+  return <TenantContext.Provider value={tenant}>{children}</TenantContext.Provider>;
+}
+
+export function useTenant(): TenantConfig {
+  const ctx = useContext(TenantContext);
+  if (!ctx) throw new Error("useTenant must be used inside <TenantProvider>");
+  return ctx;
+}

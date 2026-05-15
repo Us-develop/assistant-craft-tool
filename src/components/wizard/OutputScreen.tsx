@@ -7,6 +7,8 @@ import { generateSystemInstruction } from "@/lib/generatePrompt";
 import { buildMailtoOpenInstruction, downloadPromptPdf } from "@/lib/promptExport";
 import { isSubmittable, type Lang, type WizardData } from "@/lib/wizardSchema";
 import { useToast } from "@/components/ui/Toast";
+import { useTenant } from "@/components/TenantProvider";
+import { apiFetch } from "@/lib/apiFetch";
 
 interface CompletenessField {
   label: string;
@@ -27,6 +29,7 @@ function getCompletenessFields(data: WizardData, lang: Lang): CompletenessField[
 }
 
 export default function OutputScreen() {
+  const tenant = useTenant();
   const { lang, data, setStep, setShowOutput, resetData } = useWizard();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"instruction" | "kickoff">("instruction");
@@ -56,7 +59,7 @@ export default function OutputScreen() {
       return;
     }
 
-    void fetch("/api/submissions", {
+    void apiFetch(tenant.slug, "/api/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -74,7 +77,7 @@ export default function OutputScreen() {
         console.error("Failed to log submission:", err);
         toast(tr("save.failed", lang), "error");
       });
-  }, [data, lang, instruction, toast]);
+  }, [data, lang, instruction, tenant.slug, toast]);
 
   const filePrefix = data.assistantName?.trim() || "assistant";
   const hasKickoff = Boolean(data.kickoffMessage?.trim());
@@ -97,7 +100,7 @@ export default function OutputScreen() {
   const createShareLink = async () => {
     setLinkBusy(true);
     try {
-      const res = await fetch("/api/prompt-shares", {
+      const res = await apiFetch(tenant.slug, "/api/prompt-shares", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

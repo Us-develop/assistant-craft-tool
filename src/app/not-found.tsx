@@ -5,11 +5,9 @@ export default function NotFound() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="text-center">
         <h1 className="mb-2 text-6xl font-bold text-(--color-primary)">404</h1>
-        <p className="mb-6 text-(--color-muted-foreground)">
-          Page not found.
-        </p>
+        <p className="mb-6 text-(--color-muted-foreground)">Page not found.</p>
         <Link href="/" className="btn-primary">
-          Back to wizard
+          Back to clients
         </Link>
       </div>
     </main>

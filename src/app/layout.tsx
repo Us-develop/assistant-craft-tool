@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Assistant Craft Tool",
+  title: "Assistant Builder",
   description:
-    "Craft a tailored AI assistant system prompt in 8 guided steps. Bilingual (NL/EN).",
+    "White-label Assistant Craft Tool instances for Gobonkers clients.",
   icons: {
     icon: "/logo-us.svg",
   },

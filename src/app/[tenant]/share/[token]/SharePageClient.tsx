@@ -7,7 +7,13 @@ import { tr } from "@/lib/translations";
 import type { Lang } from "@/lib/wizardSchema";
 import { useToast } from "@/components/ui/Toast";
 
-export default function SharePageClient({ row }: { row: PromptShareRow }) {
+export default function SharePageClient({
+  row,
+  tenantSlug,
+}: {
+  row: PromptShareRow;
+  tenantSlug: string;
+}) {
   const lang = (row.language === "en" ? "en" : "nl") as Lang;
   const { toast } = useToast();
   const [copiedInst, setCopiedInst] = useState(false);
@@ -76,7 +82,7 @@ export default function SharePageClient({ row }: { row: PromptShareRow }) {
       ) : null}
 
       <p className="text-center text-sm text-(--color-muted-foreground)">
-        <Link href="/" className="text-(--color-primary) underline">
+        <Link href={`/${tenantSlug}`} className="text-(--color-primary) underline">
           {tr("sharePage.back", lang)}
         </Link>
       </p>

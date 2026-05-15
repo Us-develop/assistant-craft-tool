@@ -1,19 +1,33 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { TENANT_SLUGS } from "@/lib/tenants";
 
-/**
- * Gate all admin surfaces behind HTTP Basic Auth:
- *  - /admin               (the submissions dashboard page)
- *  - /api/admin/*         (the admin JSON + CSV endpoints)
- *
- * Credentials live in ADMIN_USER / ADMIN_PASSWORD env vars. Middleware runs
- * on the Edge runtime, so we use the Web Crypto API for constant-time comparison
- * rather than Node's `crypto.timingSafeEqual`.
- */
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/demo",
+    "/demo/:path*",
+    "/maxi-zoo",
+    "/maxi-zoo/:path*",
+  ],
 };
 
 export function middleware(request: NextRequest): NextResponse {
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+    return adminAuth(request);
+  }
+
+  const segment = pathname.split("/")[1];
+  if (segment && !TENANT_SLUGS.includes(segment as (typeof TENANT_SLUGS)[number])) {
+    return NextResponse.rewrite(new URL("/404", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+function adminAuth(request: NextRequest): NextResponse {
   const expectedUser = process.env.ADMIN_USER;
   const expectedPass = process.env.ADMIN_PASSWORD;
 
@@ -42,11 +56,6 @@ export function middleware(request: NextRequest): NextResponse {
   return NextResponse.next();
 }
 
-/**
- * Decode RFC 7617 Basic credentials (UTF-8 user:pass, then base64).
- * `atob` alone is wrong for non-ASCII: it yields a byte-per-code-unit string
- * that won't match env vars. Use TextDecoder like `Buffer(..., "utf8")` in Node.
- */
 function decodeBasic(value: string): [string, string] | [null, null] {
   try {
     const binaryString = atob(value.trim());
@@ -63,7 +72,6 @@ function decodeBasic(value: string): [string, string] | [null, null] {
   }
 }
 
-/** Constant-time string compare using Web Crypto (Edge-safe). */
 function constantTimeEquals(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let diff = 0;

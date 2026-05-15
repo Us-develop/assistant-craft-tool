@@ -1,13 +1,5 @@
-import { WizardProvider } from "@/components/wizard/WizardContext";
-import WizardContainer from "@/components/wizard/WizardContainer";
-import { ToastProvider } from "@/components/ui/Toast";
+import ClientArchive from "@/components/archive/ClientArchive";
 
-export default function Home() {
-  return (
-    <ToastProvider>
-      <WizardProvider>
-        <WizardContainer />
-      </WizardProvider>
-    </ToastProvider>
-  );
+export default function HomePage() {
+  return <ClientArchive />;
 }

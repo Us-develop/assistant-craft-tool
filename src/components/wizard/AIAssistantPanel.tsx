@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useTenant } from "@/components/TenantProvider";
+import { apiFetch } from "@/lib/apiFetch";
 import { useWizard } from "./WizardContext";
 import { X, Send, Loader2, Sparkles, Minimize2, Maximize2 } from "lucide-react";
 import AssistantRobotLottie from "@/components/AssistantRobotLottie";
@@ -81,6 +83,7 @@ const STEP_HINTS: Record<number, { en: string; nl: string }> = {
 };
 
 export default function AIAssistantPanel() {
+  const tenant = useTenant();
   const { lang, step, data } = useWizard();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -245,7 +248,7 @@ export default function AIAssistantPanel() {
       setIsLoading(true);
 
       try {
-        const response = await fetch("/api/ai/chat", {
+        const response = await apiFetch(tenant.slug, "/api/ai/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

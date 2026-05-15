@@ -38,8 +38,14 @@ interface WizardContextValue {
 
 const WizardContext = createContext<WizardContextValue | null>(null);
 
-export function WizardProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("nl");
+export function WizardProvider({
+  children,
+  defaultLang = "nl",
+}: {
+  children: ReactNode;
+  defaultLang?: Lang;
+}) {
+  const [lang, setLang] = useState<Lang>(defaultLang);
   const [step, setStepInternal] = useState(1);
   const [data, setData] = useState<WizardData>({ ...defaultWizardData });
   const [showOutput, setShowOutput] = useState(false);

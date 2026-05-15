@@ -1,7 +1,8 @@
 import { streamText } from "ai";
 import { z } from "zod";
-import { MODELS } from "@/lib/ai/client";
+import { getModelsForTenant } from "@/lib/ai/client";
 import { buildChatSystemPrompt } from "@/lib/ai/prompts";
+import { requireTenantFromRequest } from "@/lib/tenants/resolve";
 import { wizardSchema, LANGUAGES } from "@/lib/wizardSchema";
 
 const messageSchema = z.object({
@@ -17,6 +18,10 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const tenantResult = requireTenantFromRequest(request);
+  if (tenantResult instanceof Response) return tenantResult;
+  const tenant = tenantResult;
+
   try {
     const body = await request.json();
     const parsed = requestSchema.safeParse(body);
@@ -33,8 +38,9 @@ export async function POST(request: Request) {
 
     const systemPrompt = buildChatSystemPrompt(step, fullData, lang);
 
+    const models = getModelsForTenant(tenant.slug);
     const result = streamText({
-      model: MODELS.quality,
+      model: models.quality,
       system: systemPrompt,
       messages,
       maxOutputTokens: 500,

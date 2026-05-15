@@ -1,12 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { db, schema } from "@/lib/db";
 import { hashIp } from "@/lib/auth";
+import { requireTenantFromRequest } from "@/lib/tenants/resolve";
 import { submissionPayloadSchema, isSubmittable } from "@/lib/wizardSchema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const tenantResult = requireTenantFromRequest(request);
+  if (tenantResult instanceof Response) return tenantResult;
+  const tenant = tenantResult;
+
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -40,6 +45,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const [result] = await db.insert(schema.submissions).values({
+      tenantSlug: tenant.slug,
       language,
       assistantName: data.assistantName || null,
       domain: data.domain || data.customDomain || null,

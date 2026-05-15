@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useTenant } from "@/components/TenantProvider";
+import { apiFetch } from "@/lib/apiFetch";
 import { useWizard } from "./WizardContext";
 import { Sparkles, Loader2, X } from "lucide-react";
 
@@ -17,6 +19,7 @@ export default function SmartPillSelector({
   selected,
   onToggle,
 }: SmartPillSelectorProps) {
+  const tenant = useTenant();
   const { lang, data } = useWizard();
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +30,7 @@ export default function SmartPillSelector({
     setError(null);
 
     try {
-      const response = await fetch("/api/ai/suggest", {
+      const response = await apiFetch(tenant.slug, "/api/ai/suggest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
