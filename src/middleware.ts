@@ -5,7 +5,7 @@ import { TENANT_SLUGS } from "@/lib/tenants";
 
 const { auth } = NextAuth(authConfig);
 
-const PUBLIC_PATHS = ["/login", "/api/auth"];
+const PUBLIC_PATHS = ["/login", "/api/auth", "/api/signout"];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(
