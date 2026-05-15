@@ -90,7 +90,7 @@ export function buildSuggestPrompt(
 
 The user is building a custom AI assistant using a wizard tool. They are currently selecting ${category}.
 
-Current wizard context:
+Here is everything the user has already configured in previous steps:
 ${formatCurrentData(data)}
 
 Already selected ${category}:
@@ -98,7 +98,7 @@ ${currentSelections.length > 0 ? currentSelections.join(", ") : "None yet"}
 
 Generate 4-6 additional relevant ${category} suggestions that:
 1. Complement (not duplicate) the existing selections
-2. Are specifically relevant to their domain and role
+2. Are directly tailored to the user's specific domain, role, tone, audience, and other choices shown above — generic suggestions are not useful
 3. Are concise (2-5 words each)
 4. Are in ${langName}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTenant } from "@/components/TenantProvider";
 import { apiFetch } from "@/lib/apiFetch";
 import { useWizard } from "./WizardContext";
@@ -11,6 +11,14 @@ interface SmartPillSelectorProps {
   options: string[];
   selected: string[];
   onToggle: (val: string) => void;
+}
+
+function hasWizardContext(data: Record<string, unknown>): boolean {
+  return Boolean(
+    (data.domain as string)?.trim() ||
+      (data.customDomain as string)?.trim() ||
+      (data.jobTitle as string)?.trim(),
+  );
 }
 
 export default function SmartPillSelector({
@@ -24,6 +32,7 @@ export default function SmartPillSelector({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoFetched = useRef(false);
 
   const fetchSuggestions = async () => {
     setIsLoading(true);
@@ -47,8 +56,6 @@ export default function SmartPillSelector({
 
       const result = await response.json();
       const raw = Array.isArray(result.suggestions) ? (result.suggestions as string[]) : [];
-      // Only exclude fixed options and already-selected items — not the previous
-      // ghost list, so a second "Suggest more" replaces with a fresh batch.
       const newSuggestions = raw.filter(
         (s) => typeof s === "string" && !options.includes(s) && !selected.includes(s),
       );
@@ -60,6 +67,14 @@ export default function SmartPillSelector({
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (autoFetched.current) return;
+    if (!hasWizardContext(data as unknown as Record<string, unknown>)) return;
+    autoFetched.current = true;
+    fetchSuggestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAcceptSuggestion = (suggestion: string) => {
     onToggle(suggestion);
