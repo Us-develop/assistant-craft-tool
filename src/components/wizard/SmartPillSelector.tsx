@@ -76,12 +76,8 @@ export default function SmartPillSelector({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleAcceptSuggestion = (suggestion: string) => {
-    onToggle(suggestion);
-    setSuggestions((prev) => prev.filter((s) => s !== suggestion));
-  };
-
   const handleDismissSuggestion = (suggestion: string) => {
+    if (selected.includes(suggestion)) onToggle(suggestion);
     setSuggestions((prev) => prev.filter((s) => s !== suggestion));
   };
 
@@ -109,28 +105,35 @@ export default function SmartPillSelector({
 
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {suggestions.map((suggestion, index) => (
-            <div
-              key={`${suggestion}-${index}`}
-              className="group relative inline-flex items-center gap-1 rounded-full border border-dashed border-(--color-lavender) bg-(--color-titan-white) px-3 py-1.5 text-sm text-(--color-foreground)"
-            >
-              <button
-                type="button"
-                onClick={() => handleAcceptSuggestion(suggestion)}
-                className="hover:underline"
+          {suggestions.map((suggestion, index) => {
+            const isSelected = selected.includes(suggestion);
+            return (
+              <div
+                key={`${suggestion}-${index}`}
+                className={`group relative inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                  isSelected
+                    ? "pill-tag active"
+                    : "border-dashed border-(--color-lavender) bg-(--color-titan-white) text-(--color-foreground)"
+                }`}
               >
-                {suggestion}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDismissSuggestion(suggestion)}
-                className="ml-1 rounded-full p-0.5 text-(--color-muted-foreground) transition-colors hover:bg-(--color-neutral-30) hover:text-(--color-foreground)"
-                aria-label={lang === "nl" ? "Verwijder suggestie" : "Dismiss suggestion"}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ))}
+                <button
+                  type="button"
+                  onClick={() => onToggle(suggestion)}
+                  className="hover:underline"
+                >
+                  {suggestion}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDismissSuggestion(suggestion)}
+                  className="ml-1 rounded-full p-0.5 text-(--color-muted-foreground) transition-colors hover:bg-(--color-neutral-30) hover:text-(--color-foreground)"
+                  aria-label={lang === "nl" ? "Verwijder suggestie" : "Dismiss suggestion"}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 

@@ -101,6 +101,18 @@
   /* — Layout — */
   --wizard-width: 100%;
   --wizard-max: 1180px;
+
+  /* — Animations — */
+  --animate-tile-scroll: tile-scroll 60s linear infinite;
+}
+
+@keyframes tile-scroll {
+  0% {
+    transform: translate(-50%, -50%) rotate(-20deg);
+  }
+  100% {
+    transform: translate(-65%, -60%) rotate(-20deg);
+  }
 }
 
 @layer base {
