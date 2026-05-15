@@ -13,6 +13,7 @@ export const demoTenant: TenantConfig = {
   },
   logoSrc: "/tenants/demo/logo.svg",
   logoAlt: "Gobonkers",
+  colorsPath: "/tenants/demo/colors.json",
   defaultLang: "nl",
   listedOnArchive: true,
   archiveBadge: { nl: "Interne demo", en: "Internal demo" },

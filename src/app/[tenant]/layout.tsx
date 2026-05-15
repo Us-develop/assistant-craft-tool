@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTenant } from "@/lib/tenants";
+import { getTenant, loadTenantColorScheme } from "@/lib/tenants";
 import { tenantThemeStyle } from "@/lib/tenantTheme";
 
 type Props = {
@@ -25,7 +25,8 @@ export default async function TenantLayout({ children, params }: Props) {
   const tenant = getTenant(slug);
   if (!tenant) notFound();
 
-  const themeStyle = tenantThemeStyle(tenant);
+  const colors = await loadTenantColorScheme(slug);
+  const themeStyle = tenantThemeStyle(colors);
 
   return (
     <div className="min-h-dvh" style={themeStyle}>

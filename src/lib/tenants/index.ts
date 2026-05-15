@@ -23,4 +23,6 @@ export function isTenantSlug(slug: string): slug is TenantSlug {
   return bySlug.has(slug);
 }
 
-export type { TenantConfig, TenantSlug, TenantTheme } from "./types";
+export type { TenantConfig, TenantSlug } from "./types";
+export type { TenantColorScheme } from "./colors";
+export { loadTenantColorScheme, tenantColorSchemeSchema } from "./colors";

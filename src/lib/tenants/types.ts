@@ -2,13 +2,6 @@ import type { Lang } from "@/lib/wizardSchema";
 
 export type TenantSlug = "demo" | "maxi-zoo";
 
-export type TenantTheme = {
-  primary?: string;
-  primaryForeground?: string;
-  accent?: string;
-  accentForeground?: string;
-};
-
 export type TenantConfig = {
   slug: TenantSlug;
   name: string;
@@ -16,7 +9,8 @@ export type TenantConfig = {
   tagline?: { nl: string; en: string };
   logoSrc: string;
   logoAlt: string;
-  theme?: TenantTheme;
+  /** Brand colors live in `public/tenants/{slug}/colors.json` (up to 3 hex values). */
+  colorsPath: string;
   defaultLang?: Lang;
   listedOnArchive: boolean;
   archiveBadge?: { nl: string; en: string };

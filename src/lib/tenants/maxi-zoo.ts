@@ -13,12 +13,7 @@ export const maxiZooTenant: TenantConfig = {
   },
   logoSrc: "/tenants/maxi-zoo/logo.svg",
   logoAlt: "Maxi Zoo",
-  theme: {
-    primary: "#006B3F",
-    primaryForeground: "#ffffff",
-    accent: "#E8F5E9",
-    accentForeground: "#006B3F",
-  },
+  colorsPath: "/tenants/maxi-zoo/colors.json",
   defaultLang: "nl",
   listedOnArchive: true,
   openaiEnvKey: "OPENAI_API_KEY__MAXI_ZOO",
