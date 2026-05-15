@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { desc, eq, sql, type SQL } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { TENANT_SLUGS, getTenant } from "@/lib/tenants";
@@ -117,9 +118,9 @@ export default async function AdminPage({
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <a href="/admin/users" className="btn-ghost text-sm">
+          <Link href="/admin/users" className="btn-ghost text-sm">
             Manage users
-          </a>
+          </Link>
           <form method="get" className="flex items-center gap-2">
             <label htmlFor="tenant-filter" className="sr-only">
               Filter by client

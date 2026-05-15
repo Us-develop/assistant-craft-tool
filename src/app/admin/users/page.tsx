@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { desc } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { TENANT_SLUGS, getTenant } from "@/lib/tenants";
@@ -22,9 +23,9 @@ export default async function AdminUsersPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <a href="/admin" className="btn-ghost text-sm">
+          <Link href="/admin" className="btn-ghost text-sm">
             ← Submissions
-          </a>
+          </Link>
         </div>
       </header>
 
