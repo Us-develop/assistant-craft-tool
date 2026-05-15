@@ -31,7 +31,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   const tenantResult = requireTenantFromRequest(request);
-  if (tenantResult instanceof Response) return tenantResult;
+  if (tenantResult instanceof NextResponse) return tenantResult;
   const tenant = tenantResult;
 
   let raw: unknown;

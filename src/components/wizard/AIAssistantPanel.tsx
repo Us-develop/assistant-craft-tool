@@ -309,7 +309,7 @@ export default function AIAssistantPanel() {
         setIsLoading(false);
       }
     },
-    [messages, step, data, lang, isLoading],
+    [messages, step, data, lang, isLoading, tenant.slug],
   );
 
   const handleFormSubmit = (e: React.FormEvent) => {
