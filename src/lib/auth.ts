@@ -24,13 +24,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (getAdminEmails().has(email)) return true;
 
-      const rows = await db
-        .select({ id: schema.tenantUsers.id })
-        .from(schema.tenantUsers)
-        .where(eq(schema.tenantUsers.email, email))
-        .limit(1);
+      try {
+        const rows = await db
+          .select({ id: schema.tenantUsers.id })
+          .from(schema.tenantUsers)
+          .where(eq(schema.tenantUsers.email, email))
+          .limit(1);
 
-      return rows.length > 0;
+        return rows.length > 0;
+      } catch (err) {
+        console.error("[auth] signIn DB query failed:", err);
+        return false;
+      }
     },
 
     async jwt({ token, account }) {
@@ -42,11 +47,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (token.isAdmin) {
           token.allowedTenants = [];
         } else {
-          const rows = await db
-            .select({ tenantSlug: schema.tenantUsers.tenantSlug })
-            .from(schema.tenantUsers)
-            .where(eq(schema.tenantUsers.email, email));
-          token.allowedTenants = rows.map((r) => r.tenantSlug);
+          try {
+            const rows = await db
+              .select({ tenantSlug: schema.tenantUsers.tenantSlug })
+              .from(schema.tenantUsers)
+              .where(eq(schema.tenantUsers.email, email));
+            token.allowedTenants = rows.map((r) => r.tenantSlug);
+          } catch (err) {
+            console.error("[auth] jwt DB query failed:", err);
+            token.allowedTenants = [];
+          }
         }
       }
       return token;

@@ -24,8 +24,9 @@ declare module "@auth/core/jwt" {
  */
 export const authConfig = {
   providers: [Google],
+  trustHost: true,
   session: { strategy: "jwt", maxAge: 3600 },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/login" },
   callbacks: {
     session({ session, token }) {
       session.user.isAdmin = token.isAdmin ?? false;

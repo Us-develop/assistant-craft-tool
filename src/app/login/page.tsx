@@ -8,7 +8,6 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
   const error = searchParams.get("error");
-  const accessDenied = error === "AccessDenied";
 
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
@@ -18,11 +17,18 @@ function LoginForm() {
           Sign in to continue
         </p>
 
-        {accessDenied && (
+        {error === "AccessDenied" && (
           <div className="dont-box mb-6 text-left text-sm">
             <strong>Access denied.</strong> Your Google account is not on the
             allowed list. Contact an administrator if you think this is a
             mistake.
+          </div>
+        )}
+
+        {error && error !== "AccessDenied" && (
+          <div className="dont-box mb-6 text-left text-sm">
+            <strong>Sign-in failed.</strong> Something went wrong during
+            authentication. Please try again.
           </div>
         )}
 
