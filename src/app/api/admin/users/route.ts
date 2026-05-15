@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { auth } from "@/lib/auth.config";
+import { auth } from "@/lib/auth";
 import { TENANT_SLUGS } from "@/lib/tenants";
 
 export const runtime = "nodejs";

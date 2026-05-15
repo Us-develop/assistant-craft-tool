@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth, signIn } from "@/lib/auth.config";
+import { auth, signIn } from "@/lib/auth";
 
 type Props = {
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;

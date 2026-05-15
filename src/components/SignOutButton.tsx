@@ -1,5 +1,5 @@
 import { LogOut } from "lucide-react";
-import { auth, signOut } from "@/lib/auth.config";
+import { auth, signOut } from "@/lib/auth";
 
 export default async function SignOutButton() {
   const session = await auth();

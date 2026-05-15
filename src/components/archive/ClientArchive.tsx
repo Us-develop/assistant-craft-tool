@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { listTenants } from "@/lib/tenants";
-import { auth } from "@/lib/auth.config";
+import { auth } from "@/lib/auth";
 
 export default async function ClientArchive() {
   const session = await auth();

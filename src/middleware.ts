@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth.config";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { TENANT_SLUGS } from "@/lib/tenants";
+
+const { auth } = NextAuth(authConfig);
 
 const PUBLIC_PATHS = ["/login", "/api/auth"];
 
