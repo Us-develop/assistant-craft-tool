@@ -34,7 +34,9 @@ export default async function RootLayout({
       </head>
       <body>
         {children}
-        {session && <SignOutButton />}
+        {session && (
+          <SignOutButton isAdmin={session.user.isAdmin ?? false} />
+        )}
       </body>
     </html>
   );
