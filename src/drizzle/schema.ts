@@ -1,6 +1,7 @@
 import {
   mysqlTable,
   bigint,
+  boolean,
   varchar,
   text,
   json,
@@ -90,3 +91,23 @@ export const tenantUsers = mysqlTable(
 
 export type TenantUser = typeof tenantUsers.$inferSelect;
 export type NewTenantUser = typeof tenantUsers.$inferInsert;
+
+/**
+ * `temp_users` — shared training login (single row): username + password.
+ * `tenant_users` rows use `trainingTenantUserEmail(username)` for ACL.
+ */
+export const tempUsers = mysqlTable("temp_users", {
+  id: bigint("id", { mode: "number", unsigned: true })
+    .primaryKey()
+    .autoincrement(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  displayName: varchar("display_name", { length: 160 }),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdBy: varchar("created_by", { length: 255 }),
+});
+
+export type TempUser = typeof tempUsers.$inferSelect;
+export type NewTempUser = typeof tempUsers.$inferInsert;

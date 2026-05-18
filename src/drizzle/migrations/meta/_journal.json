@@ -29,6 +29,20 @@
       "when": 1778839398955,
       "tag": "0003_curly_squadron_supreme",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1779087229221,
+      "tag": "0004_free_nemesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1779108000000,
+      "tag": "0005_temp_users_username",
+      "breakpoints": true
     }
   ]
 }

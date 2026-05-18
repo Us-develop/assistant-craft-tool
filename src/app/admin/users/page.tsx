@@ -26,6 +26,9 @@ export default async function AdminUsersPage() {
           <Link href="/admin" className="btn-ghost text-sm">
             ← Submissions
           </Link>
+          <Link href="/admin/temp-users" className="btn-ghost text-sm">
+            Temp users
+          </Link>
         </div>
       </header>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -9,6 +10,33 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
   const error = searchParams.get("error");
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [credError, setCredError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleCredentialsLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setCredError(null);
+    setLoading(true);
+
+    const result = await signIn("credentials", {
+      username,
+      password,
+      callbackUrl,
+      redirect: false,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      setCredError("Invalid username or password, or account expired.");
+      return;
+    }
+
+    window.location.href = callbackUrl;
+  }
 
   return (
     <div className="relative flex min-h-dvh items-center justify-center px-4">
@@ -42,6 +70,51 @@ function LoginForm() {
           <GoogleIcon />
           Sign in with Google
         </button>
+
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-(--color-border)" />
+          <span className="text-xs uppercase tracking-wide text-(--color-muted-foreground)">
+            or
+          </span>
+          <div className="h-px flex-1 bg-(--color-border)" />
+        </div>
+
+        <form onSubmit={handleCredentialsLogin} className="space-y-3">
+          <p className="mb-1 text-xs uppercase tracking-wide text-(--color-muted-foreground)">
+            Training login
+          </p>
+
+          {credError && (
+            <div className="dont-box text-left text-sm">
+              <strong>Login failed.</strong> {credError}
+            </div>
+          )}
+
+          <input
+            type="text"
+            required
+            autoComplete="username"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="input-field w-full"
+          />
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field w-full"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full"
+          >
+            {loading ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
       </div>
     </div>
   );

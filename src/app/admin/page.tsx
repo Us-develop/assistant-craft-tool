@@ -121,6 +121,9 @@ export default async function AdminPage({
           <Link href="/admin/users" className="btn-ghost text-sm">
             Manage users
           </Link>
+          <Link href="/admin/temp-users" className="btn-ghost text-sm">
+            Temp users
+          </Link>
           <form method="get" className="flex items-center gap-2">
             <label htmlFor="tenant-filter" className="sr-only">
               Filter by client
