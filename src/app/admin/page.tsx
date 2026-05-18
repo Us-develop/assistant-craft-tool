@@ -1,58 +1,13 @@
 import Link from "next/link";
 import { desc, eq, sql, type SQL } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { collectErrorChain, dbTroubleshootingHints } from "@/lib/dbTroubleshooting";
 import { TENANT_SLUGS, getTenant } from "@/lib/tenants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
-
-function collectErrorChain(err: unknown): string {
-  const parts: string[] = [];
-  let e: unknown = err;
-  let depth = 0;
-  while (e instanceof Error && depth < 6) {
-    parts.push(e.message);
-    e = e.cause;
-    depth++;
-  }
-  if (parts.length === 0) return String(err);
-  return parts.join(" → ");
-}
-
-function dbTroubleshootingHints(message: string): string[] {
-  const m = message.toLowerCase();
-  const hints: string[] = [];
-  if (
-    m.includes("er_no_such_table") ||
-    m.includes("doesn't exist") ||
-    m.includes("does not exist")
-  ) {
-    hints.push(
-      "The `submissions` table (or another required table) is missing. From the project root, with MySQL running: npm run db:migrate",
-    );
-  }
-  if (m.includes("econnrefused") || m.includes("connect econnrefused")) {
-    hints.push(
-      "Cannot reach MySQL — start your database (see README Docker example) and confirm DB_HOST and DB_PORT in .env.local.",
-    );
-  }
-  if (m.includes("er_access_denied") || m.includes("access denied")) {
-    hints.push("MySQL rejected the login — check DB_USER and DB_PASSWORD in .env.local.");
-  }
-  if (m.includes("er_bad_db_error") || m.includes("unknown database")) {
-    hints.push(
-      "Database name not found — create it (e.g. CREATE DATABASE assistant_craft) or fix DB_NAME in .env.local.",
-    );
-  }
-  if (hints.length === 0) {
-    hints.push(
-      "Confirm DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME in .env.local match your MySQL instance, then run npm run db:migrate if tables were never created.",
-    );
-  }
-  return hints;
-}
 
 /**
  * Admin dashboard listing the most recent submissions. Auth is handled
