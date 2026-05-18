@@ -38,6 +38,7 @@ Upload the following to the Node.js account document root:
 .next/standalone/        → (rename to the account root, keeping server.js visible)
 .next/static/            → place at .next/static/ inside the same root
 public/                  → at the root
+content/                 → at the root (training KB HTML for `/ai-for-marketeers`)
 package.json             → at the root (already present in .next/standalone/)
 node_modules/            → usually not needed (standalone bundles deps), but
                            some Combell configurations require a top-level
@@ -51,6 +52,10 @@ The final layout on the server looks like:
 /
 ├── .next/
 │   └── static/
+├── content/
+│   └── ai-for-marketeers/
+│       └── index.html     ← bundled into standalone when possible; keep
+│                            this folder on the server if `/ai-for-marketeers` 404s
 ├── public/
 ├── server.js              ← entry point
 ├── package.json
