@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIY AI — Training Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── BRAND TOKENS ─────────────────────────────── */
+:root {
+  /* Primary palette */
+  --lavender:      #BDB4FF;
+  --perfume:       #F3AAFF;
+  --mint:          #8DFFB7;
+  --rajah:         #FFB985;
+  --shark:         #191A1B;
+
+  /* Secondary – light tints */
+  --ecru:          #F5F4E5;
+  --spring-wood:   #FCFCF8;
+  --titan-white:   #F2F0FF;
+  --selago:        #FBE3FF;
+  --hint-green:    #E6FFEF;
+  --seashell:      #FFF3EB;
+
+  /* Semantic aliases */
+  --bg:            var(--spring-wood);
+  --surface:       #FFFFFF;
+  --surface2:      var(--titan-white);
+  --border:        #E8E6F0;
+  --border-strong: #C8C3E8;
+  --text:          var(--shark);
+  --text-muted:    #5A5870;
+  --text-dim:      #9A98B0;
+
+  /* Accent roles */
+  --accent:        var(--lavender);
+  --accent-dark:   #7B6FD4;
+  --accent2:       var(--perfume);
+  --accent2-dark:  #C460E0;
+  --accent3:       var(--mint);
+  --accent3-dark:  #1CB86A;
+  --accent4:       var(--rajah);
+
+  /* Typography */
+  --font-heading:  'Owners Wide', 'Plus Jakarta Sans', 'Syne', 'DM Sans', sans-serif;
+  --font-body:     'Public Sans', 'DM Sans', sans-serif;
+  --font-mono:     'DM Mono', monospace;
+}
+
+/* ── RESET ─────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── BASE ──────────────────────────────────────── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR NAV ───────────────────────────────── */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 268px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 32px 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo {
+  padding: 0 24px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.sidebar-logo img {
+  height: 36px;
+  width: auto;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.sidebar-logo .label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--accent-dark);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  background: var(--titan-white);
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.sidebar-logo h1 {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--shark);
+  line-height: 1.2;
+  margin-top: 8px;
+}
+
+.nav-section {
+  padding: 0 14px;
+  margin-bottom: 6px;
+  flex: 1;
+}
+
+.nav-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: var(--titan-white);
+  color: var(--shark);
+  border-color: var(--accent);
+}
+
+.nav-item.active {
+  background: var(--titan-white);
+  color: var(--accent-dark);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.nav-item .num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  min-width: 22px;
+}
+
+.nav-item.active .num {
+  color: var(--accent-dark);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ── PROGRESS BAR ──────────────────────────────── */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 268px; right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 200;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lavender), var(--perfume));
+  transition: width 0.3s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── MAIN ──────────────────────────────────────── */
+.main {
+  margin-left: 268px;
+  min-height: 100vh;
+}
+
+/* ── HERO ──────────────────────────────────────── */
+.hero {
+  padding: 72px 64px 56px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 480px; height: 480px;
+  background: radial-gradient(circle, rgba(189,180,255,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: 160px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(243,170,255,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-dark);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-kicker::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 2px;
+  background: var(--lavender);
+  border-radius: 1px;
+}
+
+.hero h2 {
+  font-family: var(--font-heading);
+  font-size: 50px;
+  font-weight: 800;
+  line-height: 1.06;
+  margin-bottom: 22px;
+  max-width: 680px;
+  color: var(--shark);
+  letter-spacing: -0.5px;
+}
+
+.hero h2 .highlight {
+  color: var(--accent-dark);
+  position: relative;
+}
+
+.hero h2 .highlight::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -2px; right: 0;
+  height: 3px;
+  background: var(--lavender);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+.hero-sub {
+  color: var(--text-muted);
+  font-size: 16px;
+  max-width: 540px;
+  margin-bottom: 36px;
+  line-height: 1.8;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 600px;
+}
+
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 16px 24px;
+  flex: 1;
+  border-right: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.hero-meta-item:last-child { border-right: none; }
+
+.hero-meta-item:hover { background: var(--titan-white); }
+
+.hero-meta-item .meta-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.hero-meta-item .meta-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--shark);
+}
+
+/* ── SECTIONS ──────────────────────────────────── */
+.section {
+  padding: 60px 64px;
+  border-bottom: 1px solid var(--border);
+  display: none;
+}
+
+.section.active { display: block; }
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 44px;
+}
+
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-dark);
+  background: var(--titan-white);
+  border: 1px solid var(--accent);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-top: 8px;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+
+.section-header h2 {
+  font-family: var(--font-heading);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--shark);
+  letter-spacing: -0.3px;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-size: 15px;
+  max-width: 580px;
+}
+
+/* ── CARDS ─────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 26px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(189,180,255,0.15);
+  transform: translateY(-1px);
+}
+
+.card.accent-left  { border-left: 3px solid var(--lavender); }
+.card.accent-purple { border-left: 3px solid var(--perfume); }
+.card.accent-teal  { border-left: 3px solid var(--mint); }
+
+.card-icon {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--shark);
+}
+
+.card p, .card li {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.card ul { padding-left: 16px; }
+.card ul li { margin-bottom: 5px; }
+
+/* ── PROMPT BLOCKS ─────────────────────────────── */
+.prompt-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s;
+}
+
+.prompt-block:hover {
+  box-shadow: 0 4px 20px rgba(189,180,255,0.12);
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.prompt-header .prompt-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.copy-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.copy-btn:hover {
+  background: var(--hint-green);
+  border-color: var(--mint);
+  color: var(--accent3-dark);
+}
+
+.copy-btn.copied {
+  background: var(--hint-green);
+  border-color: var(--mint);
+  color: var(--accent3-dark);
+}
+
+.prompt-body {
+  padding: 22px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--shark);
+  white-space: pre-wrap;
+  background: var(--spring-wood);
+}
+
+.prompt-body .placeholder {
+  color: var(--accent-dark);
+  background: var(--titan-white);
+  padding: 0 5px;
+  border-radius: 4px;
+  border: 1px solid var(--lavender);
+}
+
+.prompt-body .comment {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ── COMPARISON TABLE ──────────────────────────── */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 28px;
+  font-size: 13px;
+}
+
+.compare-table th {
+  background: var(--titan-white);
+  padding: 13px 18px;
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  color: var(--shark);
+}
+
+.compare-table th:first-child { color: var(--text-muted); }
+
+.compare-table td {
+  padding: 12px 18px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text-muted);
+  line-height: 1.65;
+  background: var(--surface);
+  transition: background 0.15s;
+}
+
+.compare-table tr:hover td { background: var(--spring-wood); }
+
+.compare-table .yes    { color: var(--accent3-dark); font-weight: 600; }
+.compare-table .no     { color: #D93025; }
+.compare-table .partial { color: #C07A00; font-weight: 500; }
+
+.compare-table .row-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ── MISTAKE / BUILDING BLOCKS ─────────────────── */
+.mistake-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.mistake-item {
+  display: grid;
+  grid-template-columns: 48px 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 22px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mistake-item:hover {
+  border-color: var(--lavender);
+  box-shadow: 0 2px 12px rgba(189,180,255,0.12);
+}
+
+.mistake-num {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-dim);
+  line-height: 1;
+  padding-top: 3px;
+}
+
+.mistake-bad h4 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #D93025;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mistake-good h4 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent3-dark);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mistake-bad p, .mistake-good p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ── ADD-ON PILLS ──────────────────────────────── */
+.addon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.addon-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 9px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.addon-pill:hover {
+  border-color: var(--perfume);
+  background: var(--selago);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(243,170,255,0.15);
+}
+
+.addon-pill .pill-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent2-dark);
+  background: var(--selago);
+  border: 1px solid var(--perfume);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.addon-pill .pill-text {
+  font-size: 13px;
+  color: var(--shark);
+  font-weight: 400;
+}
+
+/* ── TOOL CARDS ────────────────────────────────── */
+.visual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.tool-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(189,180,255,0.14);
+  transform: translateY(-1px);
+}
+
+.tool-card .tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.tool-card h3 {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--shark);
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-weight: 500;
+}
+
+.badge.strong  { background: var(--hint-green);  color: var(--accent3-dark); border: 1px solid var(--mint); }
+.badge.medium  { background: var(--seashell);    color: #A55C00; border: 1px solid var(--rajah); }
+.badge.limited { background: #FEE2E2; color: #D93025; border: 1px solid #FECACA; }
+
+.capability-list { list-style: none; }
+.capability-list li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.6;
+}
+.capability-list li:last-child { border-bottom: none; }
+
+.capability-list li::before {
+  content: '·';
+  color: var(--lavender);
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+/* ── USE CASE CARDS ────────────────────────────── */
+.usecase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.usecase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.usecase-card:hover {
+  border-color: var(--lavender);
+  box-shadow: 0 4px 16px rgba(189,180,255,0.12);
+  transform: translateY(-2px);
+}
+
+.usecase-card .uc-category {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  background: var(--bg);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.usecase-card h3 {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--shark);
+}
+
+.usecase-card ul { list-style: none; }
+
+.usecase-card li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.6;
+}
+
+.usecase-card li::before {
+  content: '→';
+  color: var(--accent-dark);
+  flex-shrink: 0;
+  font-size: 11px;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+/* ── TIER BLOCKS ───────────────────────────────── */
+.tier-block {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+
+.tier-block:hover { border-color: var(--accent); }
+
+.tier-header {
+  padding: 14px 22px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tier-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-dark);
+  background: var(--titan-white);
+  border: 1px solid var(--accent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+.tier-title {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--shark);
+}
+
+.tier-body {
+  padding: 18px 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--surface);
+}
+
+.tier-tag {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.tier-tag:hover {
+  border-color: var(--lavender);
+  color: var(--accent-dark);
+  background: var(--titan-white);
+}
+
+/* ── CALLOUT BOXES ─────────────────────────────── */
+.callout {
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.callout.warning {
+  background: var(--seashell);
+  border: 1px solid var(--rajah);
+}
+
+.callout.tip {
+  background: var(--hint-green);
+  border: 1px solid var(--mint);
+}
+
+.callout.insight {
+  background: var(--titan-white);
+  border: 1px solid var(--lavender);
+}
+
+.callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.callout-content h4 {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.callout.warning h4 { color: #A55C00; }
+.callout.tip h4     { color: var(--accent3-dark); }
+.callout.insight h4 { color: var(--accent-dark); }
+
+.callout-content p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ── SECTION DIVIDER ───────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 36px 0;
+}
+
+/* ── SUBSECTION ────────────────────────────────── */
+.subsection { margin-bottom: 28px; }
+
+.subsection-title {
+  font-family: var(--font-heading);
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--shark);
+}
+
+.subsection-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.subsection-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+/* ── ANATOMY BLOCK ─────────────────────────────── */
+.anatomy-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 22px;
+}
+
+.anatomy-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 20px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.anatomy-row:last-child { border-bottom: none; }
+
+.anatomy-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  padding-top: 2px;
+  background: var(--titan-white);
+  border: 1px solid var(--accent);
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-align: center;
+  align-self: start;
+}
+
+.anatomy-content {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.anatomy-content strong {
+  color: var(--shark);
+  font-weight: 600;
+}
+
+/* ── SWARM GRID ────────────────────────────────── */
+.swarm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.swarm-agent {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.swarm-agent:hover {
+  border-color: var(--perfume);
+  box-shadow: 0 4px 14px rgba(243,170,255,0.15);
+  transform: translateY(-2px);
+}
+
+.swarm-agent .agent-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--titan-white);
+  border: 1px solid var(--lavender);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  font-size: 18px;
+}
+
+.swarm-agent .agent-name {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: var(--shark);
+}
+
+.swarm-agent .agent-role {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+/* ── TIMELINE ──────────────────────────────────── */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10px; bottom: 10px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--lavender), var(--perfume));
+  border-radius: 1px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 28px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -34px; top: 8px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--lavender);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--lavender);
+}
+
+.timeline-item h4 {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--shark);
+}
+
+.timeline-item p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 580px;
+}
+
+/* ── TAG ───────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--titan-white);
+  border: 1px solid var(--lavender);
+  color: var(--accent-dark);
+  vertical-align: middle;
+}
+
+/* ── SCROLL-TO-TOP ─────────────────────────────── */
+.scroll-top {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  width: 44px; height: 44px;
+  background: var(--shark);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  transition: all 0.2s;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(25,26,27,0.18);
+}
+
+.scroll-top.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.scroll-top:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* ── RESPONSIVE ────────────────────────────────── */
+@media (max-width: 1100px) {
+  .card-grid.cols-3  { grid-template-columns: 1fr 1fr; }
+  .usecase-grid       { grid-template-columns: 1fr 1fr; }
+  .swarm-grid         { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 860px) {
+  .sidebar          { display: none; }
+  .main             { margin-left: 0; }
+  .progress-bar     { left: 0; }
+  .hero             { padding: 44px 28px 36px; }
+  .section          { padding: 44px 28px; }
+  .hero h2          { font-size: 34px; }
+  .card-grid.cols-2 { grid-template-columns: 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr; }
+  .visual-grid      { grid-template-columns: 1fr; }
+  .usecase-grid     { grid-template-columns: 1fr; }
+  .mistake-item     { grid-template-columns: 40px 1fr; }
+  .mistake-good     { grid-column: 2; }
+  .hero-meta        { flex-direction: column; max-width: 100%; }
+  .hero-meta-item   { border-right: none; border-bottom: 1px solid var(--border); }
+  .hero-meta-item:last-child { border-bottom: none; }
+}
+
+/* ── ANIMATIONS ────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section.active > * {
+  animation: fadeUp 0.35s ease both;
+}
+.section.active > *:nth-child(2) { animation-delay: 0.05s; }
+.section.active > *:nth-child(3) { animation-delay: 0.10s; }
+.section.active > *:nth-child(4) { animation-delay: 0.15s; }
+.section.active > *:nth-child(5) { animation-delay: 0.20s; }
+
+/* ── INLINE BLOCK STYLES OVERRIDE ─────────────── */
+/* For the building blocks section that uses inline styles */
+[style*="var(--surface)"] { background: var(--surface) !important; }
+[style*="var(--border)"]  { border-color: var(--border) !important; }
+[style*="var(--text-dim)"]{ color: var(--text-dim) !important; }
+[style*="var(--accent3)"] { color: var(--accent3-dark) !important; }
+[style*="var(--accent)"]  { color: var(--accent-dark) !important; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" height="36" viewBox="0 0 326 155" fill="none" aria-label="Logo">
+      <!-- Left large panel -->
+      <rect x="0" y="0" width="132" height="155" rx="22" fill="#191A1B"/>
+      <!-- Thin white diagonal line — right side of left panel, slight leftward lean -->
+      <line x1="103" y1="26" x2="87" y2="128"
+            stroke="white" stroke-width="11" stroke-linecap="round"/>
+      <!-- Right section: two stacked half-panels -->
+      <rect x="148" y="0"  width="178" height="71" rx="20" fill="#191A1B"/>
+      <rect x="148" y="84" width="178" height="71" rx="20" fill="#191A1B"/>
+      <!-- Top arrow: from near centre-gap → angle up-right → horizontal right -->
+      <polyline points="156,71 208,14 324,14"
+                stroke="white" stroke-width="11"
+                stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <!-- Bottom arrow: mirror of top -->
+      <polyline points="156,84 208,141 324,141"
+                stroke="white" stroke-width="11"
+                stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <div class="label">Training Hub</div>
+    <h1>DIY AI<br>for Marketers</h1>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Session</div>
+    <a class="nav-item active" onclick="showSection('intro', this)" href="#">
+      <span class="num">00</span> Opening &amp; Framing
+    </a>
+    <a class="nav-item" onclick="showSection('basics', this)" href="#">
+      <span class="num">01</span> Prompt Basics
+    </a>
+    <a class="nav-item" onclick="showSection('custom', this)" href="#">
+      <span class="num">02</span> Building Custom AI
+    </a>
+    <a class="nav-item" onclick="showSection('claude', this)" href="#">
+      <span class="num">03</span> Claude Deep Dive
+    </a>
+    <a class="nav-item" onclick="showSection('tools', this)" href="#">
+      <span class="num">04</span> ChatGPT &amp; Co-Pilot
+    </a>
+    <a class="nav-item" onclick="showSection('visual', this)" href="#">
+      <span class="num">05</span> Visual AI
+    </a>
+    <a class="nav-item" onclick="showSection('usecases', this)" href="#">
+      <span class="num">06</span> Marketing Use Cases
+    </a>
+    <a class="nav-item" onclick="showSection('dosdonts', this)" href="#">
+      <span class="num">07</span> Do's, Don'ts &amp; Maturity
+    </a>
+    <a class="nav-item" onclick="showSection('wrapup', this)" href="#">
+      <span class="num">08</span> Action Plan
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    3h session · Intermediate<br>Digital Marketing Team
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero" id="hero-top">
+  <div class="hero-kicker">DIY AI Training</div>
+  <h2>AI that works <span class="highlight">for you.</span><br>Not the other way around.</h2>
+  <p class="hero-sub">Everything you need to build, prompt, and scale custom AI assistants that are genuinely on-brand — without becoming dependent on tools you don't understand.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="meta-label">Duration</span>
+      <span class="meta-value">3 hours</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="meta-label">Level</span>
+      <span class="meta-value">Intermediate</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="meta-label">Focus</span>
+      <span class="meta-value">Practical &amp; applicable today</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="meta-label">Templates</span>
+      <span class="meta-value">Copy-paste ready</span>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 00: INTRO -->
+<section class="section active" id="s-intro">
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <div>
+      <h2>Why we're here</h2>
+      <p>Before we touch a single tool — let's talk about the two traps most teams fall into.</p>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-content">
+      <h4>Trap #1 — AI for the sake of AI</h4>
+      <p>Using AI because it feels like you should. No clear goal, no defined use case, no way to measure if it's actually helping. The output is mediocre and nobody knows why.</p>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-content">
+      <h4>Trap #2 — Becoming dependent without understanding</h4>
+      <p>Letting AI make decisions you can't verify. Copy-pasting outputs without knowing what went in. Building workflows on top of tools you've never properly configured. One update and everything breaks.</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-icon">✦</span>
+    <div class="callout-content">
+      <h4>The DIY principle</h4>
+      <p>Understanding the machine is what protects you — creatively, strategically, professionally. Today isn't about using more AI. It's about using it better, with full control over what goes in and what comes out.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">The three layers of AI use</div>
+    <p class="subsection-desc">Most people stay at layer one. Today we move you to layer two — and show you what layer three looks like.</p>
+  </div>
+
+  <div class="card-grid cols-3">
+    <div class="card accent-left">
+      <div class="card-icon">💬</div>
+      <h3>Layer 1 — Ad hoc chat</h3>
+      <p>One-off prompts. No memory. No context between sessions. Starts from scratch every time. What 80% of teams do.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">🎯</div>
+      <h3>Layer 2 — Custom assistant</h3>
+      <p>Built once, reused infinitely. Knows your brand, your tone, your rules. Consistent output without re-briefing every time.</p>
+    </div>
+    <div class="card accent-teal">
+      <div class="card-icon">🤖</div>
+      <h3>Layer 3 — Agent / Swarm</h3>
+      <p>Acts autonomously. Multi-step workflows. Connects to tools. Multiple specialists collaborating. The frontier — and it's closer than you think.</p>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <span class="callout-icon">💡</span>
+    <div class="callout-content">
+      <h4>Today's goal</h4>
+      <p>Move from Layer 1 → Layer 2. Understand Layer 3 well enough to know when it's relevant for your team and your clients.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 01: BASICS -->
+<section class="section" id="s-basics">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div>
+      <h2>Prompt Basics &amp; Anatomy</h2>
+      <p>The fundamentals — fast and sharp. Plus the techniques most people never discover.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">What is a prompt?</div>
+    <p class="subsection-desc">A prompt is an instruction to someone who knows everything about the world — but nothing about your context, your brand, or your goals.</p>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card">
+      <div class="card-icon">🍳</div>
+      <h3>Think of it like cooking</h3>
+      <p>You can give a professional chef every ingredient in the world. If you don't tell them what dish you want, what occasion it's for, and how your guests eat — they'll cook something technically correct and completely wrong for you.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h3>Or a new hire on day one</h3>
+      <p>Brilliant person. Zero context about your agency, your clients, your tone. The quality of their first week depends entirely on the quality of your onboarding. Same principle applies to every AI interaction.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">The perfect prompt — anatomy</div>
+    <p class="subsection-desc">Every high-quality prompt has the same six layers. Miss one and the output suffers.</p>
+  </div>
+
+  <div class="anatomy-block">
+    <div class="anatomy-row">
+      <div class="anatomy-label">ROLE</div>
+      <div class="anatomy-content"><strong>Who is the AI?</strong> Not just "copywriter" — give seniority, specialisation, and perspective. "You are a senior B2B content strategist with 10 years in digital marketing agencies."</div>
+    </div>
+    <div class="anatomy-row">
+      <div class="anatomy-label">CONTEXT</div>
+      <div class="anatomy-content"><strong>What's the situation?</strong> Brand, audience, platform, goal. Don't dump everything — prioritise. Strategy first, then audience, then value prop, then differentiators.</div>
+    </div>
+    <div class="anatomy-row">
+      <div class="anatomy-label">TASK</div>
+      <div class="anatomy-content"><strong>What exactly should it do?</strong> Be precise. "Write a LinkedIn post" vs "Write 3 LinkedIn post variations — one benefit-driven, one pain-focused, one curiosity hook."</div>
+    </div>
+    <div class="anatomy-row">
+      <div class="anatomy-label">TONE</div>
+      <div class="anatomy-content"><strong>How should it sound?</strong> Not "professional" — behavioural rules. "Write like a trusted colleague, not a press release. Avoid buzzwords. Lead with the benefit."</div>
+    </div>
+    <div class="anatomy-row">
+      <div class="anatomy-label">FORMAT</div>
+      <div class="anatomy-content"><strong>What does the output look like?</strong> Define structure explicitly: headline (3 options), hook (2 sentences), 3 bullets, CTA. If you don't specify — AI decides.</div>
+    </div>
+    <div class="anatomy-row">
+      <div class="anatomy-label">CONSTRAINTS</div>
+      <div class="anatomy-content"><strong>What should it never do?</strong> Forbidden phrases, compliance rules, tone boundaries. The AI can only follow rules it knows.</div>
+    </div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">✦ Master Prompt Template</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'master-template')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="master-template">You are a <span class="placeholder">[ROLE + SENIORITY + SPECIALISATION]</span>.
+
+<span class="comment">// Context layer — ordered by priority</span>
+Brand: <span class="placeholder">[brand name + what they do + positioning]</span>
+Audience: <span class="placeholder">[who they are, what they care about, their language]</span>
+Goal: <span class="placeholder">[what this content should achieve]</span>
+Platform: <span class="placeholder">[where this will live]</span>
+
+<span class="comment">// Task</span>
+<span class="placeholder">[Specific task with exact deliverable]</span>
+
+<span class="comment">// Tone rules</span>
+DO: <span class="placeholder">[specific behaviours — e.g. lead with benefit, conversational]</span>
+DON'T: <span class="placeholder">[forbidden phrases, styles, tones]</span>
+
+<span class="comment">// Output format</span>
+Deliver:
+- <span class="placeholder">[element 1 — e.g. Headline (3 options)]</span>
+- <span class="placeholder">[element 2 — e.g. Hook paragraph (2 sentences max)]</span>
+- <span class="placeholder">[element 3 — e.g. 3 key points, benefit-driven]</span>
+- <span class="placeholder">[element 4 — e.g. CTA]</span>
+
+<span class="comment">// If anything is unclear, ask before writing.</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Next level — what most people skip</div>
+    <p class="subsection-desc">These techniques separate users from builders.</p>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card accent-left">
+      <div class="card-icon">🔍</div>
+      <h3>Reverse Engineering</h3>
+      <p>Point AI at a competitor's website, ad, or content — and ask it to extract the brand voice, positioning, implied values, and communication strategy. Instant competitive intelligence.</p>
+    </div>
+    <div class="card accent-left">
+      <div class="card-icon">🌐</div>
+      <h3>Scraping &amp; Analysis</h3>
+      <p>Feed Claude a URL or paste raw content. Ask it to analyse patterns, extract tone, cluster themes, or identify what's missing. Audience research in minutes instead of days.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">⚡</div>
+      <h3>Agentic Mode</h3>
+      <p>Let AI take multi-step actions autonomously: browse the web, run analyses, compile reports. You set the goal — it figures out the steps. Available in Claude, ChatGPT, and Perplexity.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">📖</div>
+      <h3>Brand Book Building</h3>
+      <p>Feed AI your existing content (5–10 pieces). Ask it to extract and codify your brand voice, recurring adjectives, content patterns, and tone rules into a reusable system prompt.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Prompt add-ons that change everything</div>
+    <p class="subsection-desc">Small additions. Dramatic difference in output quality and style.</p>
+  </div>
+
+  <div class="addon-grid">
+    <div class="addon-pill">
+      <span class="pill-tag">IQ</span>
+      <span class="pill-text">"Respond at IQ 140 level — deep reasoning, no hand-holding"</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">OBVIOUS</span>
+      <span class="pill-text">"Obviously..." — primes the model to skip caveats and be direct</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">COT</span>
+      <span class="pill-text">"Think step by step before answering"</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">ADHD</span>
+      <span class="pill-text">"Format for ADHD: lead with conclusion, short paragraphs, bold key terms"</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">SOCRATIC</span>
+      <span class="pill-text">"Ask me the questions you need before you begin"</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">CONTRAST</span>
+      <span class="pill-text">"Show me the bad version first, then the good — explain what changed"</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">PERSONA</span>
+      <span class="pill-text">"You think like a Wired journalist crossed with a CMO"</span>
+    </div>
+    <div class="addon-pill">
+      <span class="pill-tag">EXPERT</span>
+      <span class="pill-text">"You are the world's foremost expert in [domain] — no hedging"</span>
+    </div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">⚡ Brand Voice Extraction Prompt</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'brand-extract')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="brand-extract">Act as an art director and senior brand strategist.
+
+Analyse the following content samples from <span class="placeholder">[brand name]</span>:
+
+<span class="placeholder">[paste 5–10 existing texts, posts, or copy]</span>
+
+Extract and document:
+1. Core voice attributes (list 6–8 specific adjectives)
+2. Sentence structure patterns (long/short, active/passive, rhythm)
+3. Recurring vocabulary and brand-specific terms
+4. What they consistently avoid saying
+5. Emotional register (warm, authoritative, playful, etc.)
+6. 3 example sentences that perfectly represent the voice
+7. 3 sentences that would be "off-brand"
+
+Deliver this as a system prompt I can embed directly into a custom AI assistant.</div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">🔍 Competitor Reverse Engineering Prompt</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'reverse-eng')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="reverse-eng">Act as an art director. Screen this website and create a brand voice and positioning brief based on its look, feel, and content. Be as descriptive as possible.
+
+URL / Content: <span class="placeholder">[URL or pasted content]</span>
+
+Cover:
+- Brand positioning (what they claim to be)
+- Implied positioning (what they actually communicate)
+- Voice attributes — list specific adjectives
+- What they say vs. what they deliberately avoid
+- Tone cues per audience (decision makers, technical, creative)
+- Visual personality implied by language
+- Gaps and opportunities they're leaving open
+
+<span class="comment">// Use this to brief your own AI assistant on competitive context</span></div>
+  </div>
+</section>
+
+<!-- SECTION 02: CUSTOM AI -->
+<section class="section" id="s-custom">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div>
+      <h2>Building Custom AI</h2>
+      <p>The difference between a tool that frustrates you and one that works like a senior team member.</p>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <span class="callout-icon">💡</span>
+    <div class="callout-content">
+      <h4>The hiring analogy</h4>
+      <p>Write your assistant's job description the same way you'd write a vacancy: function title, responsibilities, tone expectations, and — crucially — what you don't want. That mental shift forces you to be concrete. An assistant with no defined scope has no character.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Claude vs. ChatGPT vs. Co-Pilot</div>
+    <p class="subsection-desc">Same category. Very different strengths. Know what you're picking up.</p>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Capability</th>
+        <th>Claude</th>
+        <th>ChatGPT</th>
+        <th>Co-Pilot (M365)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-label">Custom system instructions</td>
+        <td class="yes">✓ Projects</td>
+        <td class="yes">✓ Custom GPTs</td>
+        <td class="partial">Limited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Team knowledge sharing</td>
+        <td class="yes">✓ Team Projects</td>
+        <td class="partial">Enterprise only</td>
+        <td class="yes">✓ SharePoint integration</td>
+      </tr>
+      <tr>
+        <td class="row-label">Long document handling</td>
+        <td class="yes">✓ Best in class (200k tokens)</td>
+        <td class="partial">Good</td>
+        <td class="partial">Limited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Tone &amp; nuance quality</td>
+        <td class="yes">✓ Strongest</td>
+        <td class="yes">✓ Strong</td>
+        <td class="partial">Generic</td>
+      </tr>
+      <tr>
+        <td class="row-label">Agentic / autonomous tasks</td>
+        <td class="yes">✓ Claude Code, tools</td>
+        <td class="yes">✓ Operator, Deep Research</td>
+        <td class="partial">Limited</td>
+      </tr>
+      <tr>
+        <td class="row-label">Web browsing</td>
+        <td class="yes">✓</td>
+        <td class="yes">✓</td>
+        <td class="yes">✓</td>
+      </tr>
+      <tr>
+        <td class="row-label">Embedded in existing tools</td>
+        <td class="no">✗ Standalone</td>
+        <td class="partial">Partial (plugins)</td>
+        <td class="yes">✓ Teams, Word, Excel, Outlook</td>
+      </tr>
+      <tr>
+        <td class="row-label">Best for</td>
+        <td>Brand voice, long-form, strategy, nuance</td>
+        <td>Broad tasks, code, research, versatility</td>
+        <td>Meeting notes, email, Office workflows</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="callout-icon">✦</span>
+    <div class="callout-content">
+      <h4>The honest answer</h4>
+      <p>None of these know your brand. Whichever tool you use — enrichment is mandatory. The platform is secondary to the quality of what you put in.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">The 5 building blocks of a system prompt</div>
+  </div>
+
+  <div class="mistake-list">
+    <div class="mistake-item">
+      <div class="anatomy-label" style="font-family:var(--font-mono);font-size:11px;color:var(--accent-dark);letter-spacing:2px;padding-top:3px;text-transform:uppercase;align-self:start;background:var(--titan-white);border:1px solid var(--accent);padding:3px 8px;border-radius:4px;text-align:center;">ROLE</div>
+      <div><p style="font-size:13px;color:#D93025;margin-bottom:4px;">❌ "You are a copywriter AI"</p><p style="font-size:12px;color:var(--text-dim);">No seniority, no expertise, no depth</p></div>
+      <div><p style="font-size:13px;color:var(--accent3-dark);margin-bottom:4px;">✓ "You are a senior content strategist with 10 years in B2B marketing, specialising in..."</p><p style="font-size:12px;color:var(--text-dim);">Gives the model a level to perform at</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="anatomy-label" style="font-family:var(--font-mono);font-size:11px;color:var(--accent-dark);letter-spacing:2px;padding-top:3px;text-transform:uppercase;align-self:start;background:var(--titan-white);border:1px solid var(--accent);padding:3px 8px;border-radius:4px;text-align:center;">TONE</div>
+      <div><p style="font-size:13px;color:#D93025;margin-bottom:4px;">❌ "Write in a warm tone"</p><p style="font-size:12px;color:var(--text-dim);">The model interprets "warm" its own way</p></div>
+      <div><p style="font-size:13px;color:var(--accent3-dark);margin-bottom:4px;">✓ "Write like a trusted colleague — no jargon, no press release formality, always lead with empathy"</p><p style="font-size:12px;color:var(--text-dim);">Behavioural rules + example sentences</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="anatomy-label" style="font-family:var(--font-mono);font-size:11px;color:var(--accent-dark);letter-spacing:2px;padding-top:3px;text-transform:uppercase;align-self:start;background:var(--titan-white);border:1px solid var(--accent);padding:3px 8px;border-radius:4px;text-align:center;">CONTEXT</div>
+      <div><p style="font-size:13px;color:#D93025;margin-bottom:4px;">❌ "Here's everything about our brand… write something engaging"</p><p style="font-size:12px;color:var(--text-dim);">AI can't identify what matters most</p></div>
+      <div><p style="font-size:13px;color:var(--accent3-dark);margin-bottom:4px;">✓ Ordered: Strategy → Audience → Value prop → Differentiators → Good examples</p><p style="font-size:12px;color:var(--text-dim);">Each layer builds on the previous</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="anatomy-label" style="font-family:var(--font-mono);font-size:11px;color:var(--accent-dark);letter-spacing:2px;padding-top:3px;text-transform:uppercase;align-self:start;background:var(--titan-white);border:1px solid var(--accent);padding:3px 8px;border-radius:4px;text-align:center;">RULES</div>
+      <div><p style="font-size:13px;color:#D93025;margin-bottom:4px;">❌ "Follow our forbidden word list"</p><p style="font-size:12px;color:var(--text-dim);">Without the actual list — it improvises</p></div>
+      <div><p style="font-size:13px;color:var(--accent3-dark);margin-bottom:4px;">✓ Include the actual list. Embed the content, not a reference to it.</p><p style="font-size:12px;color:var(--text-dim);">Rules it doesn't know, it can't follow</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="anatomy-label" style="font-family:var(--font-mono);font-size:11px;color:var(--accent-dark);letter-spacing:2px;padding-top:3px;text-transform:uppercase;align-self:start;background:var(--titan-white);border:1px solid var(--accent);padding:3px 8px;border-radius:4px;text-align:center;">FORMAT</div>
+      <div><p style="font-size:13px;color:#D93025;margin-bottom:4px;">❌ "Give me a text"</p><p style="font-size:12px;color:var(--text-dim);">AI picks the structure. 50% chance it's wrong.</p></div>
+      <div><p style="font-size:13px;color:var(--accent3-dark);margin-bottom:4px;">✓ "Headline (3 options), Hook (2 sentences), 3 bullets, CTA, Meta description (155 chars)"</p><p style="font-size:12px;color:var(--text-dim);">Control the structure or AI will</p></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">The 8 most common mistakes</div>
+  </div>
+
+  <div class="mistake-list">
+    <div class="mistake-item">
+      <div class="mistake-num">01</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>Too broad of scope. "It should be able to write copy, set strategy, translate, make briefings, spot trends…"</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>Pick one core function. Build from there. A specialist always outperforms a generalist.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">02</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>Instructions without tone examples. "Write warmly" is a wish, not an instruction.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>Always include example sentences — both correct AND incorrect. The AI learns from contrast.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">03</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>Referring to rules without including them. "See our brand guidelines" — the AI has never seen them.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>Embed the content, not the instruction to follow it. Enrich with substance, not references.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">04</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>Locking in trend sources. Those references age fast and limit the assistant's strategic range.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>User brings current trend info into the session prompt. The assistant interprets it — not stores it.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">05</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>Never testing edge cases. Works on standard tasks — breaks on anything unexpected.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>Deliberately test with ambiguous, incomplete, or unusual inputs before you ship it to the team.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">06</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>One assistant for NL and FR. Bilingual by design — mediocre in both languages.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>Build separate assistants per language. Each has different CTA conventions, rhythm, and vocabulary.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">07</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>Treating AI as a replacement. Letting it decide things you haven't validated.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>You set direction. AI executes and accelerates. Human always in the lead — not the loop.</p></div>
+    </div>
+    <div class="mistake-item">
+      <div class="mistake-num">08</div>
+      <div class="mistake-bad"><h4>The mistake</h4><p>No maintenance after launch. Brands evolve. The assistant doesn't know unless you update it.</p></div>
+      <div class="mistake-good"><h4>The fix</h4><p>Schedule quarterly reviews. An outdated assistant is a compliance and quality risk.</p></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Advanced prompting techniques</div>
+    <p class="subsection-desc">Embed these into your system prompts or use them ad hoc.</p>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">🧠 Chain of Thought (CoT)</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'cot')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="cot">Before you answer, think through this step by step.
+Show your reasoning process, state your assumptions clearly,
+and flag where you are uncertain before giving your final output.</div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">🎯 ADHD-Friendly Output</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'adhd')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="adhd">Format this content for someone with ADHD:
+- Start every section with the conclusion, not the build-up
+- Max 2 sentences per paragraph
+- Bold the single most important phrase in each section
+- No introductory preamble — begin immediately with the substance
+- Use clear visual breaks between sections</div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">🔄 Socratic Intake (make AI ask first)</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'socratic')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="socratic">Before you write anything, ask me the questions you need
+to produce the best possible output for this task.
+Keep it to a maximum of 5 questions, prioritised by impact.
+Wait for my answers before you begin writing.</div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">⚡ System Prompt Template — Ready to Use</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'system-full')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="system-full"><span class="comment">## ROLE</span>
+You are <span class="placeholder">[NAME]</span>, a senior <span class="placeholder">[SPECIALISM]</span> working for <span class="placeholder">[BRAND]</span>.
+You have deep expertise in <span class="placeholder">[DOMAIN]</span> and you write exclusively for <span class="placeholder">[AUDIENCE]</span>.
+
+<span class="comment">## BRAND CONTEXT</span>
+Brand: <span class="placeholder">[what the brand does and why it exists]</span>
+Positioning: <span class="placeholder">[how they differ from competitors]</span>
+Audience: <span class="placeholder">[who they are — emotionally, not just demographically]</span>
+
+<span class="comment">## TONE RULES</span>
+DO:
+- <span class="placeholder">[specific behaviour 1]</span>
+- <span class="placeholder">[specific behaviour 2]</span>
+
+DON'T:
+- <span class="placeholder">[forbidden phrase or style]</span>
+- <span class="placeholder">[forbidden phrase or style]</span>
+
+Good example: "<span class="placeholder">[sentence that nails the voice]</span>"
+Bad example: "<span class="placeholder">[sentence that misses it]</span>"
+
+<span class="comment">## CORE RULES</span>
+- Never fabricate statistics, testimonials, or claims
+- Always ask before making assumptions on compliance-sensitive topics
+- If you don't have enough context, ask — don't guess
+- Offer 2–3 output variations unless told otherwise
+
+<span class="comment">## OUTPUT FORMAT</span>
+Default structure: <span class="placeholder">[define your standard output structure here]</span></div>
+  </div>
+</section>
+
+<!-- SECTION 03: CLAUDE DEEP DIVE -->
+<section class="section" id="s-claude">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div>
+      <h2>Claude Deep Dive</h2>
+      <p>Skills, Projects, Agents — and why a swarm of specialists beats one generalist every time.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">The three Claude modes</div>
+  </div>
+
+  <div class="card-grid cols-3">
+    <div class="card accent-left">
+      <div class="card-icon">💬</div>
+      <h3>Chat</h3>
+      <p>One-off. No memory between sessions. Great for experiments and one-time tasks. Starts from zero every time.</p>
+      <br>
+      <p style="color:var(--text-dim);font-size:12px;font-family:var(--font-mono);">USE WHEN: quick, exploratory, non-repeating</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">📁</div>
+      <h3>Projects</h3>
+      <p>Persistent system instructions + document uploads. Shares knowledge across your team. On-brand every time without re-briefing.</p>
+      <br>
+      <p style="color:var(--text-dim);font-size:12px;font-family:var(--font-mono);">USE WHEN: repeating tasks, team workflows, brand consistency</p>
+    </div>
+    <div class="card accent-teal">
+      <div class="card-icon">🤖</div>
+      <h3>Agents / Skills</h3>
+      <p>Autonomous multi-step execution. Connects to tools and APIs. A Skill is a saved expert role. An Agent acts independently.</p>
+      <br>
+      <p style="color:var(--text-dim);font-size:12px;font-family:var(--font-mono);">USE WHEN: automation, complex workflows, no human per step</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">The Swarm Principle</div>
+    <p class="subsection-desc">The most common mistake: "Let's build one Content AI and we're done." The reality: you need specialists.</p>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card">
+      <h3>❌ The Generalist Trap</h3>
+      <p>One assistant that writes copy, sets strategy, translates, builds briefings, and monitors trends. It does all of these things — averagely. No depth, no consistent voice, constant re-prompting.</p>
+    </div>
+    <div class="card accent-teal">
+      <h3>✓ The Specialist Swarm</h3>
+      <p>Multiple focused assistants, each with deep domain knowledge in their area. They share the same brand foundation but each has its own expertise. One brand voice. Many specialisms.</p>
+    </div>
+  </div>
+
+  <div class="subsection-title" style="margin-top:32px;margin-bottom:20px;font-family:var(--font-heading);font-size:20px;font-weight:700;color:var(--shark);">Example: Libelle AI Team (Roularta)</div>
+
+  <div class="swarm-grid">
+    <div class="swarm-agent">
+      <div class="agent-icon">✍️</div>
+      <div class="agent-name">Shakespeare</div>
+      <div class="agent-role">NL Copywriter · Digital First</div>
+    </div>
+    <div class="swarm-agent">
+      <div class="agent-icon">📧</div>
+      <div class="agent-name">Orwell</div>
+      <div class="agent-role">CRM Copywriter · Loyalty</div>
+    </div>
+    <div class="swarm-agent">
+      <div class="agent-icon">🎯</div>
+      <div class="agent-name">Hemingway</div>
+      <div class="agent-role">CRM Copywriter · Acquisition</div>
+    </div>
+    <div class="swarm-agent">
+      <div class="agent-icon">💎</div>
+      <div class="agent-name">Austen</div>
+      <div class="agent-role">CRM Copywriter · Brand</div>
+    </div>
+    <div class="swarm-agent">
+      <div class="agent-icon">📊</div>
+      <div class="agent-name">Brontë</div>
+      <div class="agent-role">CRM Data Strategist</div>
+    </div>
+    <div class="swarm-agent">
+      <div class="agent-icon">🗄️</div>
+      <div class="agent-name">Product RAG</div>
+      <div class="agent-role">Product Data Enricher</div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <span class="callout-icon">💡</span>
+    <div class="callout-content">
+      <h4>Swarm questionnaire — start here</h4>
+      <p>1. What content do you create most often? (Top 3)<br>2. What is your #1 content bottleneck right now?<br>3. What is your niche or domain expertise?<br>4. Do you have a defined brand voice?<br><br>Your answers define which specialist assistant you build first.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Pre-build checklist</div>
+    <p class="subsection-desc">Before you write a single line of system prompt — answer these 10 questions.</p>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card">
+      <ul>
+        <li>1. How does the assistant gather information — does it ask, or assume?</li>
+        <li>2. Does it model expert reasoning, or just execute tasks?</li>
+        <li>3. Does it lead the user, or follow instructions?</li>
+        <li>4. What is the flow and hierarchy of information it receives?</li>
+        <li>5. What does "good output" look like — can you describe it exactly?</li>
+      </ul>
+    </div>
+    <div class="card">
+      <ul>
+        <li>6. How does it handle memory gaps between sessions?</li>
+        <li>7. Is it structured around modes or single workflows?</li>
+        <li>8. How does it handle vague or incomplete prompts?</li>
+        <li>9. What brand, domain, and ethical safeguards are embedded?</li>
+        <li>10. When and how should it push back on the user?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 04: CHATGPT & COPILOT -->
+<section class="section" id="s-tools">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <div>
+      <h2>ChatGPT &amp; Co-Pilot</h2>
+      <p>What's actually in these tools — beyond what you already know.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">ChatGPT — beyond basic chat</div>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card accent-left">
+      <div class="card-icon">🔧</div>
+      <h3>Custom GPTs</h3>
+      <p>Pre-configured assistants for specific tasks. Set instructions and knowledge once — reuse forever. Best for: proposals, mailing content, procurement screening, repeating briefing workflows.</p>
+      <br>
+      <p style="font-size:12px;color:var(--text-dim);">Trigger: when you're repeating the same type of prompt in the same context.</p>
+    </div>
+    <div class="card accent-left">
+      <div class="card-icon">📂</div>
+      <h3>Projects</h3>
+      <p>Persistent memory + file uploads per project context. Similar to Claude Projects but with different sharing constraints. Team access requires Enterprise or Team plan.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">⚡</div>
+      <h3>Agentic / Operator Mode</h3>
+      <p>ChatGPT can browse, execute code, fill forms, and chain multi-step tasks autonomously. Deep Research builds full reports with cited sources. Excellent for competitive analysis and audience research at scale.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">🎨</div>
+      <h3>Canvas</h3>
+      <p>Co-edit documents and code directly in the interface. Iterates visually. Great for long-form documents where you want to refine alongside the AI rather than prompt → copy → paste.</p>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-content">
+      <h4>Memory — powerful and risky</h4>
+      <p>ChatGPT's memory feature retains information about you across conversations. Useful when set intentionally. Risky when you've forgotten what it remembers. Audit it regularly: Settings → Memory → Manage.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Co-Pilot — the embedded option</div>
+    <p class="subsection-desc">Co-Pilot's advantage is where it lives — inside the tools you already use.</p>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card accent-teal">
+      <div class="card-icon">✅</div>
+      <h3>Where Co-Pilot wins</h3>
+      <ul>
+        <li>Meeting notes → action items in Teams (seconds)</li>
+        <li>Excel data → summaries and visualisations</li>
+        <li>Email drafts in Outlook — contextual and quick</li>
+        <li>PowerPoint from a Word doc — automated structure</li>
+        <li>No context-switching — stays in your workflow</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚠️</div>
+      <h3>Where Co-Pilot falls short</h3>
+      <ul>
+        <li>Creative and brand-nuanced copy</li>
+        <li>Long-form strategic content</li>
+        <li>Custom system instructions (very limited)</li>
+        <li>Multi-language or brand voice precision</li>
+        <li>Complex prompt engineering</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-icon">✦</span>
+    <div class="callout-content">
+      <h4>Practical rule of thumb</h4>
+      <p>Co-Pilot for operational efficiency in M365. Claude for brand-critical and nuanced content. ChatGPT for research, versatility, and agentic tasks. They're not competitors — they're a stack.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 05: VISUAL AI -->
+<section class="section" id="s-visual">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <div>
+      <h2>Visual AI</h2>
+      <p>What works, what doesn't, what's replaced what — and how to use it without embarrassing yourself or your clients.</p>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-content">
+      <h4>The Sora situation</h4>
+      <p>OpenAI's Sora was positioned as the video AI revolution — but access remains limited and inconsistent. For most agencies, it's not yet a reliable production tool. What's actually usable right now is elsewhere.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Tool landscape — what each does well</div>
+  </div>
+
+  <div class="visual-grid">
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>Midjourney</h3>
+        <span class="badge strong">Image · Strong</span>
+      </div>
+      <ul class="capability-list">
+        <li>Best quality for editorial, lifestyle, and concept imagery</li>
+        <li>Strong aesthetic control with style references</li>
+        <li>Not ideal for exact product rendering</li>
+        <li>No native text accuracy — avoid text in images</li>
+        <li>Prompt: style + subject + lighting + mood + aspect ratio</li>
+      </ul>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>Adobe Firefly</h3>
+        <span class="badge strong">Image · Safe</span>
+      </div>
+      <ul class="capability-list">
+        <li>Commercially safe — trained on licensed content only</li>
+        <li>Deep Photoshop integration (generative fill, expand)</li>
+        <li>Strong for product retouching and background generation</li>
+        <li>Less creative range than Midjourney for concept work</li>
+        <li>Best for: client-facing, legally safe deliverables</li>
+      </ul>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>DALL·E (ChatGPT)</h3>
+        <span class="badge medium">Image · Medium</span>
+      </div>
+      <ul class="capability-list">
+        <li>Improved with GPT-4o — much better text in images</li>
+        <li>Good for quick mockups and concepts in workflow</li>
+        <li>Not production-level for brand imagery</li>
+        <li>Useful for: presentation visuals, ideation boards</li>
+        <li>Easy to iterate within the same ChatGPT conversation</li>
+      </ul>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>Canva AI</h3>
+        <span class="badge medium">Design · Accessible</span>
+      </div>
+      <ul class="capability-list">
+        <li>Best for non-designers who need branded social output fast</li>
+        <li>Magic Resize, AI copy, background removal all solid</li>
+        <li>Limited creative ceiling — recognisable "Canva look"</li>
+        <li>Strong for: templates, social posts, quick decks</li>
+        <li>Not for: premium creative or complex brand work</li>
+      </ul>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>Kling / Runway</h3>
+        <span class="badge medium">Video · Growing</span>
+      </div>
+      <ul class="capability-list">
+        <li>Kling: strong short-form video from image or text prompt</li>
+        <li>Runway Gen-3: better temporal consistency than earlier versions</li>
+        <li>Both are viable for social video content (6–10 sec clips)</li>
+        <li>Still struggles with complex motion and hands</li>
+        <li>Best for: product lifestyle video, social ads, loop content</li>
+      </ul>
+    </div>
+    <div class="tool-card">
+      <div class="tool-header">
+        <h3>Envato / Stock AI</h3>
+        <span class="badge medium">Assets · Safe</span>
+      </div>
+      <ul class="capability-list">
+        <li>AI-generated stock that's commercially licensed</li>
+        <li>Good for filler imagery and social backgrounds</li>
+        <li>Not brand-specific by nature</li>
+        <li>Useful for: pitch decks, internal comms, ad testing</li>
+        <li>Combine with Firefly for brand-adapted output</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">What visual AI can and cannot replace</div>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Task</th>
+        <th>AI can replace</th>
+        <th>AI cannot replace</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-label">Product photography</td>
+        <td class="yes">Lifestyle context shots, background variants, scale tests</td>
+        <td class="partial">Exact product details, packaging text, highly regulated categories</td>
+      </tr>
+      <tr>
+        <td class="row-label">Social content</td>
+        <td class="yes">Concept images, mood boards, A/B test variants</td>
+        <td class="partial">Real-person UGC, authentic community content</td>
+      </tr>
+      <tr>
+        <td class="row-label">Video ads</td>
+        <td class="yes">Short lifestyle loops, product reveals (6–10 sec)</td>
+        <td class="no">Testimonials, complex narrative, people-centric spots</td>
+      </tr>
+      <tr>
+        <td class="row-label">Design work</td>
+        <td class="yes">Mockups, ideation, background generation, retouching</td>
+        <td class="no">Brand identity, complex layout, print-grade precision</td>
+      </tr>
+      <tr>
+        <td class="row-label">Photography shoots</td>
+        <td class="partial">Setting and context variations, cost reduction for iterations</td>
+        <td class="no">Real human emotion, legally sensitive sectors, exact faces</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Do's &amp; Don'ts — Visual AI</div>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card accent-teal">
+      <h3>✓ Do</h3>
+      <ul>
+        <li>Always disclose AI-generated imagery where required by platform or regulation</li>
+        <li>Use AI for iteration and ideation — human for final creative direction</li>
+        <li>Verify commercial licensing before client use (Firefly = safest)</li>
+        <li>Run AI images through post-production — they rarely ship raw</li>
+        <li>Use reference images for brand consistency (style, colour, mood)</li>
+        <li>Test multiple tools for the same task — results vary significantly</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>✗ Don't</h3>
+      <ul>
+        <li>Use AI-generated faces of real, recognisable people</li>
+        <li>Generate imagery of minors without explicit purpose and caution</li>
+        <li>Pass AI imagery as photography without disclosure to clients</li>
+        <li>Rely on AI for accurate text within images (still unreliable)</li>
+        <li>Use Midjourney/DALL-E for regulated sectors (pharma, finance, legal) without legal review</li>
+        <li>Skip the copyright check — AI training data is still legally contested</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-header">
+      <span class="prompt-title">🖼️ Image Generation Prompt Template</span>
+      <button class="copy-btn" onclick="copyPrompt(this, 'image-prompt')">⎘ Copy</button>
+    </div>
+    <div class="prompt-body" id="image-prompt"><span class="placeholder">[Subject]</span>, <span class="placeholder">[setting/environment]</span>, <span class="placeholder">[lighting style]</span>, <span class="placeholder">[mood/atmosphere]</span>, <span class="placeholder">[camera angle]</span>, <span class="placeholder">[colour palette]</span>, <span class="placeholder">[style reference — e.g. editorial photography, clean product shot]</span>, high resolution, --ar <span class="placeholder">[aspect ratio e.g. 4:5 or 16:9]</span>
+
+<span class="comment">// Examples of style references that work well:</span>
+<span class="comment">// "shot on Hasselblad, natural light, muted earth tones"</span>
+<span class="comment">// "clean white studio, minimal, Scandinavian aesthetic"</span>
+<span class="comment">// "golden hour, warm tones, lifestyle photography"</span>
+<span class="comment">// "flat lay, overhead, pastel colour palette"</span></div>
+  </div>
+</section>
+
+<!-- SECTION 06: USE CASES -->
+<section class="section" id="s-usecases">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <div>
+      <h2>Marketing Use Cases</h2>
+      <p>What you can start doing today — by category.</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <span class="callout-icon">⏱️</span>
+    <div class="callout-content">
+      <h4>The time shift</h4>
+      <p>Old process: 60 min (10 ideation / 40 creating / 10 checking). AI process: 35 min (15 prompting / 5 AI generating / 15 improving and iterating). The win isn't just speed — it's more iteration rounds in less time.</p>
+    </div>
+  </div>
+
+  <div class="usecase-grid">
+    <div class="usecase-card">
+      <div class="uc-category">Brand &amp; Strategy</div>
+      <h3>Brand Intelligence</h3>
+      <ul>
+        <li>Extract brand voice from existing content → embed in system prompt</li>
+        <li>Reverse engineer competitor positioning from their website</li>
+        <li>Build a full brand book from scratch</li>
+        <li>Competitive analysis: positioning, messaging, gaps (prompt #36 style)</li>
+        <li>Audience research → actionable profile (prompt #29 style)</li>
+      </ul>
+    </div>
+    <div class="usecase-card">
+      <div class="uc-category">Content Production</div>
+      <h3>Content at Scale</h3>
+      <ul>
+        <li>1 source text → 5 formats (LinkedIn, newsletter, caption, blog, short)</li>
+        <li>Generate quarterly content calendars</li>
+        <li>Write SEO briefs that writers can use immediately</li>
+        <li>A/B variants: benefit-driven / pain-focused / curiosity hook</li>
+        <li>Translate and transcreate (separate assistants per language)</li>
+      </ul>
+    </div>
+    <div class="usecase-card">
+      <div class="uc-category">Research &amp; Analysis</div>
+      <h3>Strategic Research</h3>
+      <ul>
+        <li>Deep Research on competitors, sectors, trends</li>
+        <li>Cluster customer feedback by theme</li>
+        <li>Summarise long reports into exec-ready briefs</li>
+        <li>Analyse ad performance copy patterns</li>
+        <li>Build audience personas from survey data</li>
+      </ul>
+    </div>
+    <div class="usecase-card">
+      <div class="uc-category">Operations</div>
+      <h3>Workflow Efficiency</h3>
+      <ul>
+        <li>Meeting notes → action points in 30 seconds</li>
+        <li>Structure proposals and RFP responses</li>
+        <li>Build internal FAQ and knowledge bases</li>
+        <li>Draft client status updates and reports</li>
+        <li>Onboarding docs for new team members</li>
+      </ul>
+    </div>
+    <div class="usecase-card">
+      <div class="uc-category">Client Deliverables</div>
+      <h3>Agency Output</h3>
+      <ul>
+        <li>Campaign briefing → creative territories</li>
+        <li>Generate 20+ ad copy variants for testing</li>
+        <li>Social media copy banks per platform</li>
+        <li>Email sequence drafts (welcome, nurture, re-engage)</li>
+        <li>Landing page structure + copy framework</li>
+      </ul>
+    </div>
+    <div class="usecase-card">
+      <div class="uc-category">Visual AI Integration</div>
+      <h3>Visual Production</h3>
+      <ul>
+        <li>Product lifestyle imagery variants for A/B testing</li>
+        <li>Social post image generation in brand palette</li>
+        <li>Background removal + replacement (Firefly)</li>
+        <li>Short video loops for paid social (Kling/Runway)</li>
+        <li>Pitch deck visuals and concept mood boards</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 07: DOS DONTS -->
+<section class="section" id="s-dosdonts">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <div>
+      <h2>Do's, Don'ts &amp; Maturity</h2>
+      <p>The guardrails — and an honest look at where most teams actually are.</p>
+    </div>
+  </div>
+
+  <div class="card-grid cols-2">
+    <div class="card accent-teal">
+      <h3>✓ Do</h3>
+      <ul>
+        <li>Always keep a human in the lead — not just the loop</li>
+        <li>Treat first drafts as first drafts — iterate-first mindset</li>
+        <li>Embed content in system prompts, not references to it</li>
+        <li>Schedule quarterly reviews of all assistants</li>
+        <li>Document every system prompt iteration and why you changed it</li>
+        <li>Test edge cases and unusual inputs before sharing with the team</li>
+        <li>Use separate language assistants for NL and FR</li>
+        <li>Specify output format — always</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>✗ Don't</h3>
+      <ul>
+        <li>Let AI fabricate stats, testimonials, or claims — label hypotheticals</li>
+        <li>Input confidential client data into public tools (GDPR risk)</li>
+        <li>Build one assistant to do everything</li>
+        <li>Let AI make final decisions on brand or compliance matters</li>
+        <li>Assume "professional tone" is a sufficient instruction</li>
+        <li>Launch an assistant and never update it</li>
+        <li>Treat outputs as final without a human editorial pass</li>
+        <li>Use AI imagery in regulated sectors without legal review</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">AI Maturity — where do you sit?</div>
+    <p class="subsection-desc">Honest assessment before you build more. Each tier needs to be stable before the next.</p>
+  </div>
+
+  <div class="tier-block">
+    <div class="tier-header">
+      <span class="tier-label">Tier 1</span>
+      <span class="tier-title">Foundation — must address first</span>
+    </div>
+    <div class="tier-body">
+      <span class="tier-tag">Governance framework</span>
+      <span class="tier-tag">Ethics guidelines</span>
+      <span class="tier-tag">Licensing clarity</span>
+      <span class="tier-tag">GDPR compliance</span>
+      <span class="tier-tag">Data handling policy</span>
+    </div>
+  </div>
+
+  <div class="tier-block">
+    <div class="tier-header">
+      <span class="tier-label">Tier 2</span>
+      <span class="tier-title">Strategic — define before building</span>
+    </div>
+    <div class="tier-body">
+      <span class="tier-tag">Expert vs generalist decision</span>
+      <span class="tier-tag">Adoption strategy</span>
+      <span class="tier-tag">Impact measurement</span>
+      <span class="tier-tag">Future-proofing criteria</span>
+    </div>
+  </div>
+
+  <div class="tier-block">
+    <div class="tier-header">
+      <span class="tier-label">Tier 3</span>
+      <span class="tier-title">Operational — address during development</span>
+    </div>
+    <div class="tier-body">
+      <span class="tier-tag">Maintenance schedule</span>
+      <span class="tier-tag">Dependency mapping</span>
+      <span class="tier-tag">Team upskilling plan</span>
+      <span class="tier-tag">Quality benchmarks</span>
+    </div>
+  </div>
+
+  <div class="tier-block">
+    <div class="tier-header">
+      <span class="tier-label">Tier 4</span>
+      <span class="tier-title">Long-term viability — ongoing</span>
+    </div>
+    <div class="tier-body">
+      <span class="tier-tag">Swarm architecture</span>
+      <span class="tier-tag">Sustainability</span>
+      <span class="tier-tag">Continuous learning cycles</span>
+      <span class="tier-tag">Tool landscape monitoring</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 08: WRAP UP -->
+<section class="section" id="s-wrapup">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <div>
+      <h2>Action Plan</h2>
+      <p>Three things you do this week. Not someday — this week.</p>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <h4>Day 1 — Pick one repeating task</h4>
+      <p>Identify one task you do weekly that follows the same pattern. A specific type of copy, a briefing format, a report structure. That's your first assistant.</p>
+    </div>
+    <div class="timeline-item">
+      <h4>Day 2 — Write the system prompt</h4>
+      <p>Use the template from this session. Role + Context + Tone rules (with examples) + Do's &amp; Don'ts + Output format. Keep it under 8,000 characters. Focus beats completeness.</p>
+    </div>
+    <div class="timeline-item">
+      <h4>Day 3 — Test with edge cases</h4>
+      <p>Don't just test the easy tasks. Give it something ambiguous, something incomplete, something off-script. Find where it breaks before your team or clients do.</p>
+    </div>
+    <div class="timeline-item">
+      <h4>Week 6 — Review and iterate</h4>
+      <p>Schedule a 30-minute review now. What changed in your brand? What did the assistant get wrong repeatedly? Update the system prompt. Document what you changed and why.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <div class="subsection-title">Sources worth following</div>
+  </div>
+
+  <div class="card-grid cols-3">
+    <div class="card">
+      <h3>Ethan Mollick</h3>
+      <p>@emollick — Wharton professor. Nuanced, research-backed, accessible. Best starting point for strategic AI thinking.</p>
+    </div>
+    <div class="card">
+      <h3>Anthropic Blog</h3>
+      <p>anthropic.com — Technical and policy insights from the Claude team. Essential for understanding what's actually happening under the hood.</p>
+    </div>
+    <div class="card">
+      <h3>Simon Willison</h3>
+      <p>simonwillison.net — Developer who tests LLM capabilities rigorously. Reliable technical depth without hype.</p>
+    </div>
+    <div class="card">
+      <h3>The Neuron</h3>
+      <p>theneurondaily.com — Practical AI tools and use cases for marketers. Accessible and action-oriented.</p>
+    </div>
+    <div class="card">
+      <h3>The Rundown AI</h3>
+      <p>Daily briefing on AI news and tools. Good radar for new developments without going deep.</p>
+    </div>
+    <div class="card">
+      <h3>Lenny's Newsletter</h3>
+      <p>Product and growth focus with strong AI applications for marketing and product teams.</p>
+    </div>
+  </div>
+
+  <div class="callout tip" style="margin-top:40px;">
+    <span class="callout-icon">✦</span>
+    <div class="callout-content">
+      <h4>The closing thought</h4>
+      <p>AI is not a tool you pick up and put down. It's a colleague you hire, onboard, coach, and periodically review. How well that colleague performs depends entirely on how well you brief them. You now know how to brief them properly.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</div>
+
+<script>
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  document.querySelector('.main').scrollTo(0, 0);
+  window.scrollTo(0, 0);
+}
+
+function copyPrompt(btn, id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '⎘ Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Progress bar
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.body.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const btn = document.getElementById('scrollTop');
+  if (scrollTop > 300) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+</script>
+</body>
+</html>

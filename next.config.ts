@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
   logging: {
     fetches: { fullUrl: false },
   },
+  async redirects() {
+    return [
+      {
+        source: "/ai-for-marketeers/",
+        destination: "/ai-for-marketeers",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

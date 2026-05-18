@@ -1,6 +1,7 @@
 import type { NextAuthConfig, DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import { buildAuthCookies } from "./authCookies";
 
 declare module "next-auth" {
   interface Session {
@@ -38,6 +39,7 @@ export const authConfig = {
       authorize: () => null,
     }),
   ],
+  cookies: buildAuthCookies(),
   trustHost: true,
   session: { strategy: "jwt", maxAge: 3600 },
   pages: { signIn: "/login", error: "/login" },
